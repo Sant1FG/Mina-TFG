@@ -54,7 +54,7 @@ public class ExcavatorController : MonoBehaviour
          // AÑADIDO: boost a baja velocidad
         float speed = new Vector3(playerRB.linearVelocity.x, 0f, playerRB.linearVelocity.z).magnitude;
         float torque = enginePower * mainPedalInput;
-         if (speed < 5f && mainPedalInput > 0f) torque *= 2.5f;  
+         if (speed < 2f && mainPedalInput > 0f) torque *= 2.5f;  
 
         colliders.RRWheel.motorTorque = torque;
         colliders.RLWheel.motorTorque = torque;

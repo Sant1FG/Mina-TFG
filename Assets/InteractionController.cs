@@ -7,6 +7,8 @@ public class InteractionController : MonoBehaviour
 
     [SerializeField] private Transform player; // raíz de la excavadora (para medir distancia)
     [SerializeField] private HUDController hud;
+
+    [SerializeField] private VeinSpawner spawner;
     [SerializeField] private KeyCode collectKey = KeyCode.E;
     private CoalVein veinTarget;
     private Nexus nexusTarget;
@@ -128,7 +130,8 @@ public class InteractionController : MonoBehaviour
 
 
         veinsInRange.Remove(vein);
-        Destroy(vein.gameObject);
+        //Destroy(vein.gameObject);
+        spawner.ReplaceVein(vein.gameObject);
 
         if (veinTarget == vein)
         {
