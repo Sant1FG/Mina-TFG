@@ -14,9 +14,17 @@ public class ExcavatorController : MonoBehaviour
     [SerializeField] private float maxSteerAngle;
     [SerializeField] private float centerOfMassYOffset = -0.55f;
     [SerializeField] private float lowSpeedThreshold = 6f;         // m/s (~21.6 km/h)
-    [SerializeField] private float lowSpeedBoost = 1.6f;   
+    [SerializeField] private float lowSpeedBoost = 1.6f;
     private bool breakInput;
-   
+    private bool oilSlipActive;
+    private float oilSlipDuration;
+    [SerializeField] private float oilSlipAngularDrag = 1.2f;
+    [SerializeField] private float oilSlipSteerFactor = 0.5f;
+    [SerializeField] private float oilSlipMotorFactor = 0.7f;
+    private float originalAngularDrag;
+    private float originalMaxSteerAngle;
+    private bool valuesSaved;
+
     private float steerAngle;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -24,7 +32,7 @@ public class ExcavatorController : MonoBehaviour
     {
         playerRB = gameObject.GetComponent<Rigidbody>();
 
-          if (playerRB != null)
+        if (playerRB != null)
         {
             var com = playerRB.centerOfMass;
             com.y += centerOfMassYOffset;
@@ -35,10 +43,21 @@ public class ExcavatorController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+
+        if (oilSlipActive && Time.time >= oilSlipDuration)
+        {
+                oilSlipActive = false;
+                // Restaurar valores originales
+                playerRB.angularDamping = originalAngularDrag;
+                maxSteerAngle = originalMaxSteerAngle;
+        }
+
         GetInput();
         ApplyMotor();
         ApplySteering();
         UpdateWheelPosition();
+
+        
     }
 
     void GetInput()
@@ -51,10 +70,11 @@ public class ExcavatorController : MonoBehaviour
     void ApplyMotor()
     {
 
-         // AÑADIDO: boost a baja velocidad
+        // AÑADIDO: boost a baja velocidad
         float speed = new Vector3(playerRB.linearVelocity.x, 0f, playerRB.linearVelocity.z).magnitude;
         float torque = enginePower * mainPedalInput;
-         if (speed < 2f && mainPedalInput > 0f) torque *= 2.5f;  
+        if (oilSlipActive) torque *= oilSlipMotorFactor;
+        if (speed < 2f && mainPedalInput > 0f) torque *= 2.5f;
 
         colliders.RRWheel.motorTorque = torque;
         colliders.RLWheel.motorTorque = torque;
@@ -90,6 +110,24 @@ public class ExcavatorController : MonoBehaviour
         wheelMesh.transform.position = position;
         wheelMesh.transform.rotation = quat;
     }
+    
+    public void TriggerOilSlip(float duration)
+{
+    oilSlipActive = true;
+    oilSlipDuration = Time.time + duration;
+
+    // Guardar valores originales (una sola vez)
+    if (!valuesSaved)
+    {
+        originalAngularDrag = playerRB.angularDamping;
+        originalMaxSteerAngle = maxSteerAngle;
+        valuesSaved = true;
+    }
+
+    // Ajustar temporalmente
+    playerRB.angularDamping = oilSlipAngularDrag;
+    maxSteerAngle = originalMaxSteerAngle * oilSlipSteerFactor;
+}
 }
 
 [System.Serializable]
