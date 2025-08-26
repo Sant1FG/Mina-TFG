@@ -1,0 +1,87 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using UnityEngine;
+using Random = UnityEngine.Random;
+
+public class ObstacleSpawner : MonoBehaviour
+{
+
+    [SerializeField] Transform internalPositions;
+    [SerializeField] Transform player;
+    [SerializeField] private List<GameObject> obstaclePrefabs;
+    [SerializeField] private float minDistanceXZ = 15f;
+    private List<Transform> obstaclePositions;
+    //HashSet hace contains ++ rapidos
+    private HashSet<Transform> occupied;
+    //Replace with TimeController managing
+    public float spawnInterval = 10f; // cada 30 s
+    private float nextSpawn;
+
+    private void Awake()
+    {
+        obstaclePositions = new List<Transform>();
+        occupied = new HashSet<Transform>();
+
+        foreach (Transform position in internalPositions)
+        {
+            obstaclePositions.Add(position);
+        }
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private void Start()
+    {
+        nextSpawn = spawnInterval + Time.time;
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        if (Time.time >= nextSpawn)
+        {
+            SpawnObstacle();
+            nextSpawn = Time.time + spawnInterval;
+        }
+    }
+
+    private void SpawnObstacle()
+    {
+        // buscar spots libres
+        List<Transform> freeSpots = new List<Transform>();
+        foreach (var s in obstaclePositions)
+        if (!occupied.Contains(s)) freeSpots.Add(s);
+
+        if (freeSpots.Count == 0) return; // ya llenos
+        Transform spot = null;
+        List<Transform> validSpots = new List<Transform>();
+        float sqrMinDistance = minDistanceXZ * minDistanceXZ;
+        foreach (Transform currentSpot in freeSpots)
+        {
+            float dx = currentSpot.position.x - player.position.x;
+            float dz = currentSpot.position.z - player.position.z;
+            float d = dx * dx + dz * dz;
+            if (d > sqrMinDistance)
+            {
+                validSpots.Add(currentSpot);
+            }
+
+        }
+
+        if (validSpots.Count == 0)
+        {
+            Debug.Log("Player adjacent to all free spots.");
+           return;  
+        } 
+
+        // elegir spot aleatorio
+        spot = validSpots[UnityEngine.Random.Range(0, validSpots.Count)];
+
+        //elegir obstaculo aleatoria de la lista de prefabs
+        int index = Random.Range(0, obstaclePrefabs.Count);
+        GameObject obstacle = obstaclePrefabs[index];
+
+        Instantiate(obstacle, spot.position, Quaternion.identity);
+        occupied.Add(spot);
+    }
+}

@@ -11,9 +11,9 @@ public class VeinSpawner : MonoBehaviour
     [SerializeField] private int initialVeins;
     [SerializeField] private int maxTriesPerSpawn = 40;
     [SerializeField] private float minDistanceXZ = 5f;
+    [SerializeField] private float minDistanceObstacles = 10f;
+    [SerializeField] Transform obstaclePositions;
     [SerializeField] private float maxSlopeDeg = 25f;
-    [SerializeField] private LayerMask spawnVolumeMask;
-
     private Vector3 terrainPos;
     private Vector3 terrainSize;
     private TerrainData terrainData;
@@ -67,6 +67,7 @@ public class VeinSpawner : MonoBehaviour
             float z = UnityEngine.Random.Range(bounds.min.z, bounds.max.z);
 
             if (!InsideVolumeXZ(x, z)) continue;
+            if (InsideObstacleRangeXZ(x, z)) continue;
 
             Vector3 probe = new Vector3(x, bounds.center.y, z);
             if (spawnArea.ClosestPoint(probe) != probe) continue;
@@ -79,13 +80,13 @@ public class VeinSpawner : MonoBehaviour
 
             Vector3 possible = new Vector3(x, y, z);
             bool tooClose = false;
-
+            float sqrDistXZ = minDistanceXZ * minDistanceXZ;
             for (int j = 0; j < generatedVeins.Count; j++)
             {
                 float dx = possible.x - generatedVeins[j].x;
                 float dz = possible.z - generatedVeins[j].z;
                 float d2 = dx * dx + dz * dz;
-                if (d2 < minDistanceXZ * minDistanceXZ) { tooClose = true; break; }
+                if (d2 < sqrDistXZ ) { tooClose = true; break; }
             }
 
             if (tooClose) continue;
@@ -97,9 +98,25 @@ public class VeinSpawner : MonoBehaviour
         position = default;
         return false;
     }
-    
+
+    private bool InsideObstacleRangeXZ(float x, float z)
+    {
+        if (obstaclePositions == null) return false;
+        float minDistObstacleSqr = minDistanceObstacles * minDistanceObstacles;
+
+        foreach (Transform obstacle in obstaclePositions)
+        {
+            float dx = obstacle.position.x - x;
+            float dz = obstacle.position.z - z;
+            float d = dx * dx + dz * dz;
+            if (d < minDistObstacleSqr) return true;
+        }
+
+        return false;
+    }
+
     // 2) Validar que (x,z) cae dentro del volumen con RaycastAll (paridad impar)
-bool InsideVolumeXZ(float x, float z)
+    bool InsideVolumeXZ(float x, float z)
 {
     Bounds b = spawnArea.bounds;
     Vector3 origin = new Vector3(x, b.max.y + 5f, z);
@@ -107,7 +124,6 @@ bool InsideVolumeXZ(float x, float z)
     float dist = b.size.y + 10f;
 
     // Filtra por la capa del volumen si puedes (crea una Layer "SpawnVolume")
-    // var hits = Physics.RaycastAll(origin, dir, dist, spawnVolumeMask, QueryTriggerInteraction.Ignore);
     var hits = Physics.RaycastAll(origin, dir, dist, ~0, QueryTriggerInteraction.Ignore);
 
     int count = 0;
