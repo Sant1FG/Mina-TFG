@@ -13,8 +13,6 @@ public class ExcavatorController : MonoBehaviour
     private float breakPower = 0f;
     [SerializeField] private float maxSteerAngle;
     [SerializeField] private float centerOfMassYOffset = -0.55f;
-    [SerializeField] private float lowSpeedThreshold = 6f;         // m/s (~21.6 km/h)
-    [SerializeField] private float lowSpeedBoost = 1.6f;
     private bool breakInput;
     private bool oilSlipActive;
     private float oilSlipDuration;

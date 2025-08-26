@@ -13,7 +13,6 @@ public class VeinSpawner : MonoBehaviour
     [SerializeField] private float minDistanceXZ = 5f;
     [SerializeField] private float minDistanceObstacles = 10f;
     [SerializeField] Transform obstaclePositions;
-    [SerializeField] private float maxSlopeDeg = 25f;
     private Vector3 terrainPos;
     private Vector3 terrainSize;
     private TerrainData terrainData;

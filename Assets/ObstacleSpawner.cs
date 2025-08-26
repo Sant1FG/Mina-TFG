@@ -9,12 +9,14 @@ public class ObstacleSpawner : MonoBehaviour
 
     [SerializeField] Transform internalPositions;
     [SerializeField] Transform player;
+    [SerializeField] TimerController timer;
     [SerializeField] private List<GameObject> obstaclePrefabs;
-    [SerializeField] private float minDistanceXZ = 15f;
+    //How far can an obstacle spawn from the player's current position
+    [SerializeField] private float playerSpawnDist = 15f;
     private List<Transform> obstaclePositions;
     //HashSet hace contains ++ rapidos
     private HashSet<Transform> occupied;
-    //Replace with TimeController managing
+    
     public float spawnInterval = 10f; // cada 30 s
     private float nextSpawn;
 
@@ -50,12 +52,12 @@ public class ObstacleSpawner : MonoBehaviour
         // buscar spots libres
         List<Transform> freeSpots = new List<Transform>();
         foreach (var s in obstaclePositions)
-        if (!occupied.Contains(s)) freeSpots.Add(s);
+            if (!occupied.Contains(s)) freeSpots.Add(s);
 
         if (freeSpots.Count == 0) return; // ya llenos
         Transform spot = null;
         List<Transform> validSpots = new List<Transform>();
-        float sqrMinDistance = minDistanceXZ * minDistanceXZ;
+        float sqrMinDistance = playerSpawnDist * playerSpawnDist;
         foreach (Transform currentSpot in freeSpots)
         {
             float dx = currentSpot.position.x - player.position.x;
@@ -71,8 +73,8 @@ public class ObstacleSpawner : MonoBehaviour
         if (validSpots.Count == 0)
         {
             Debug.Log("Player adjacent to all free spots.");
-           return;  
-        } 
+            return;
+        }
 
         // elegir spot aleatorio
         spot = validSpots[UnityEngine.Random.Range(0, validSpots.Count)];
@@ -81,7 +83,13 @@ public class ObstacleSpawner : MonoBehaviour
         int index = Random.Range(0, obstaclePrefabs.Count);
         GameObject obstacle = obstaclePrefabs[index];
 
-        Instantiate(obstacle, spot.position, Quaternion.identity);
+        GameObject instance = Instantiate(obstacle, spot.position, Quaternion.identity);
         occupied.Add(spot);
+
+        //GasObstacles necesitan timeController
+        if (instance.TryGetComponent<ToxicGas>(out ToxicGas gas))
+        {
+            gas.AddTimerController(timer);
+        }
     }
 }

@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class InteractionController : MonoBehaviour
 {
 
     [SerializeField] private Transform player; // raíz de la excavadora (para medir distancia)
     [SerializeField] private HUDController hud;
+    [SerializeField] private TimerController timer;
 
     [SerializeField] private VeinSpawner spawner;
     [SerializeField] private KeyCode collectKey = KeyCode.E;
@@ -154,8 +156,11 @@ public class InteractionController : MonoBehaviour
             return false;
 
         }
+        timer.AddTime(state.coalInDepot * config.timePerCoalUnit);
+        state.score += state.coalInDepot;
         state.coalInDepot = 0;
         hud.setCoalText(state.coalInDepot);
+        hud.setScoreText(state.score);
         Debug.Log("Deposito con exito");
 
         return true;
