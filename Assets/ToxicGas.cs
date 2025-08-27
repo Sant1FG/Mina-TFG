@@ -1,11 +1,12 @@
+using System;
 using UnityEngine;
 
 public class ToxicGas : MonoBehaviour
 {
     private TimerController timerController;
 
-
-    public void AddTimerController(TimerController t) {
+    public void AddTimerController(TimerController t)
+    {
         timerController = t;
     }
     private void OnTriggerEnter(Collider other)

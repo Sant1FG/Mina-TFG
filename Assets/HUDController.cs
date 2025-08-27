@@ -1,66 +1,75 @@
 using UnityEngine;
-using TMPro;
 using System.Collections;
 using Unity.VisualScripting;
 using System;
+using TMPro;
 
 public class HUDController : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI coalText;
-    [SerializeField] private TextMeshProUGUI interactionText;
+    [SerializeField] private GameObject interactionText;
     [SerializeField] private TextMeshProUGUI notificationText;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI scoreText;
+     //Observer
     [SerializeField] private TimerController timer;
+    [SerializeField] private ObstacleSpawner spawner;
+    [SerializeField] private InteractionController interaction;
 
-
-    private SessionState state;
-    private GameConfig config;
-    private Coroutine notificationCoroutine;
-
-    public void SetSessionState(SessionState sessionState)
-    {
-        state = sessionState;
-    }
-
-    public void setConfig(GameConfig gameConfig)
-    {
-        config = gameConfig;
-    }
 
     private void Awake()
     {
         if (interactionText != null) interactionText.gameObject.SetActive(false);
         if (notificationText != null) notificationText.gameObject.SetActive(false);
-        timer.OnTick += setTimerText;
     }
 
-    private void setTimerText(float time)
+    void OnEnable()
+    {
+        if (timer != null) timer.OnTick += SetTimerText;
+        if (interaction != null)
+        {
+            interaction.OnNotificationToast += ShowNotificationToast;
+            interaction.OnShowInteraction += HandleShowInteraction;
+        }
+        if (spawner != null) spawner.onObstacleSpawn += ShowNotificationToast;
+    }
+
+    void OnDisable()
+    {
+        if (timer != null) timer.OnTick -= SetTimerText;
+        if (interaction != null)
+        {
+            interaction.OnNotificationToast -= ShowNotificationToast;
+            interaction.OnShowInteraction -= HandleShowInteraction;
+        }
+        if (spawner != null) spawner.onObstacleSpawn -= ShowNotificationToast;
+    }
+
+    private void SetTimerText(float time)
     {
         timerText.text = time.ToString("f0");
     }
 
-    public void setCoalText(int value)
+    public void SetCoalText(int value)
     {
         coalText.text = value.ToString();
     }
 
-    public void setScoreText(int value)
+    public void SetScoreText(int value)
     {
         scoreText.text = value.ToString();
     }
 
-    public void ShowInteractionText(string msg)
+    public void ShowInteractionText()
     {
         if (interactionText == null) return;
         interactionText.gameObject.SetActive(true);
-        interactionText.text = msg;
     }
 
-     public void ShowNotificationText(string msg, float duration)
+     public void ShowNotificationToast(string msg, float duration)
     {
         if (notificationText == null) return;
-        notificationCoroutine = StartCoroutine(ToastRoutine(msg, duration));
+        StartCoroutine(ToastRoutine(msg, duration));
     }
 
     private IEnumerator ToastRoutine(string msg, float duration)
@@ -71,7 +80,18 @@ public class HUDController : MonoBehaviour
         yield return new WaitForSeconds(duration);
 
         notificationText.gameObject.SetActive(false);
-        notificationCoroutine = null;
+    }
+
+    private void HandleShowInteraction(bool show)
+    {
+        if (show)
+        {
+            ShowInteractionText();
+        }
+        else
+        {
+            HideInteractionText();
+        }
     }
 
     public void HideInteractionText()

@@ -7,15 +7,17 @@ public class InteractionController : MonoBehaviour
 {
 
     [SerializeField] private Transform player; // raíz de la excavadora (para medir distancia)
-    [SerializeField] private HUDController hud;
-    [SerializeField] private TimerController timer;
-
     [SerializeField] private VeinSpawner spawner;
     [SerializeField] private KeyCode collectKey = KeyCode.E;
     private CoalVein veinTarget;
     private Nexus nexusTarget;
     private SessionState state;
     private GameConfig config;
+
+    public event Action<string,float> OnNotificationToast;
+    public event Action<bool> OnShowInteraction;
+    public event Action OnCollectCoal;
+    public event Action OnDepositCoal;
 
     private HashSet<CoalVein> veinsInRange = new HashSet<CoalVein>();
 
@@ -37,7 +39,7 @@ public class InteractionController : MonoBehaviour
             {
                 Debug.Log("Pulsado boton interaccion al lado de nexo");
                 TryDeposit(nexusTarget);
-                hud.HideInteractionText();
+                OnShowInteraction?.Invoke(false);
 
             }
             else if (veinTarget != null)
@@ -77,16 +79,16 @@ public class InteractionController : MonoBehaviour
     //Called from Nexus.cs
     public void NotifyNexusEntered(Nexus nexus)
     {
-        if (nexus == null) return;
+        if (nexus == null || state == null) return;
         nexusTarget = nexus;
-        if(state.coalInDepot > 0) hud.ShowInteractionText("Pulsa E para depositar");    
+        if(state.coalInDepot > 0) OnShowInteraction?.Invoke(true);    
     }
 
     public void NotifyNexusExited(Nexus nexus)
     {
         if (nexus == null) return;
         nexusTarget = null;
-        hud.HideInteractionText();
+        OnShowInteraction?.Invoke(false);
     }
 
 
@@ -120,14 +122,13 @@ public class InteractionController : MonoBehaviour
         if (state.coalInDepot >= config.depositMax)
         {
             Debug.Log("Deposito lleno");
-            hud.ShowNotificationText("Deposito lleno", 3f);
+            OnNotificationToast?.Invoke("Deposito lleno. Entrega el carbón en la central", 3f);
             return false;
 
         }
         else
         {
-            state.coalInDepot++;
-            hud.setCoalText(state.coalInDepot);
+            OnCollectCoal?.Invoke();
         }
 
 
@@ -141,7 +142,6 @@ public class InteractionController : MonoBehaviour
         }
 
         Debug.Log("Recogida con exito");
-
         return true;
     }
 
@@ -152,17 +152,13 @@ public class InteractionController : MonoBehaviour
         if (state.coalInDepot <= 0)
         {
             Debug.Log("Deposito vacio");
-            hud.ShowNotificationText("Deposito vacio, recoge carbon por el escenario", 3f);
+            OnNotificationToast?.Invoke("Deposito vacio. Recoge carbon en la mina", 3f);
             return false;
 
         }
-        timer.AddTime(state.coalInDepot * config.timePerCoalUnit);
-        state.score += state.coalInDepot;
-        state.coalInDepot = 0;
-        hud.setCoalText(state.coalInDepot);
-        hud.setScoreText(state.score);
+        OnDepositCoal?.Invoke();     
         Debug.Log("Deposito con exito");
-
+        OnNotificationToast?.Invoke("Carbon depositado! Añadiendo tiempo limite", 3f);
         return true;
     }
 
@@ -172,12 +168,12 @@ public class InteractionController : MonoBehaviour
 
         if (veinTarget != null)
         {
-            hud.ShowInteractionText("Pulsa E para recoger");
+            OnShowInteraction?.Invoke(true);
             return;
         }
         else
         {
-            hud.HideInteractionText();
+            OnShowInteraction?.Invoke(false);
         }
     }
 

@@ -16,7 +16,8 @@ public class ObstacleSpawner : MonoBehaviour
     private List<Transform> obstaclePositions;
     //HashSet hace contains ++ rapidos
     private HashSet<Transform> occupied;
-    
+    public event Action<string,float> onObstacleSpawn;
+
     public float spawnInterval = 10f; // cada 30 s
     private float nextSpawn;
 
@@ -85,11 +86,24 @@ public class ObstacleSpawner : MonoBehaviour
 
         GameObject instance = Instantiate(obstacle, spot.position, Quaternion.identity);
         occupied.Add(spot);
-
+        String spawnMessage = "";
         //GasObstacles necesitan timeController
         if (instance.TryGetComponent<ToxicGas>(out ToxicGas gas))
         {
             gas.AddTimerController(timer);
+            spawnMessage = "PRECAUCION: Se ha detectado una bolsa de gas tóxico";
         }
+        else if (instance.TryGetComponent<OilSpill>(out OilSpill oil))
+        {
+            spawnMessage = "PRECAUCION: Se ha derramado aceite resbaladizo";
+        }
+        else
+        {
+            spawnMessage = "PRECAUCION: Ha ocurrido un derrumbe";
+        }
+
+        onObstacleSpawn?.Invoke(spawnMessage, 3f);
+
+        
     }
 }

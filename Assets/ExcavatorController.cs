@@ -26,9 +26,15 @@ public class ExcavatorController : MonoBehaviour
     private float steerAngle;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private void Awake()
+    {
+        //Game manager might call for Reposition before Start()
+        playerRB = gameObject.GetComponent<Rigidbody>();
+    }
+
     void Start()
     {
-        playerRB = gameObject.GetComponent<Rigidbody>();
+        
 
         if (playerRB != null)
         {
@@ -44,10 +50,10 @@ public class ExcavatorController : MonoBehaviour
 
         if (oilSlipActive && Time.time >= oilSlipDuration)
         {
-                oilSlipActive = false;
-                // Restaurar valores originales
-                playerRB.angularDamping = originalAngularDrag;
-                maxSteerAngle = originalMaxSteerAngle;
+            oilSlipActive = false;
+            // Restaurar valores originales
+            playerRB.angularDamping = originalAngularDrag;
+            maxSteerAngle = originalMaxSteerAngle;
         }
 
         GetInput();
@@ -55,7 +61,7 @@ public class ExcavatorController : MonoBehaviour
         ApplySteering();
         UpdateWheelPosition();
 
-        
+
     }
 
     void GetInput()
@@ -108,24 +114,32 @@ public class ExcavatorController : MonoBehaviour
         wheelMesh.transform.position = position;
         wheelMesh.transform.rotation = quat;
     }
-    
-    public void TriggerOilSlip(float duration)
-{
-    oilSlipActive = true;
-    oilSlipDuration = Time.time + duration;
 
-    // Guardar valores originales (una sola vez)
-    if (!valuesSaved)
+    public void TriggerOilSlip(float duration)
     {
-        originalAngularDrag = playerRB.angularDamping;
-        originalMaxSteerAngle = maxSteerAngle;
-        valuesSaved = true;
+        oilSlipActive = true;
+        oilSlipDuration = Time.time + duration;
+
+        // Guardar valores originales (una sola vez)
+        if (!valuesSaved)
+        {
+            originalAngularDrag = playerRB.angularDamping;
+            originalMaxSteerAngle = maxSteerAngle;
+            valuesSaved = true;
+        }
+
+        // Ajustar temporalmente
+        playerRB.angularDamping = oilSlipAngularDrag;
+        maxSteerAngle = originalMaxSteerAngle * oilSlipSteerFactor;
     }
 
-    // Ajustar temporalmente
-    playerRB.angularDamping = oilSlipAngularDrag;
-    maxSteerAngle = originalMaxSteerAngle * oilSlipSteerFactor;
-}
+    public void Reposition(Vector3 position,Quaternion rotation)
+    {
+         playerRB.position = position;
+        playerRB.rotation = rotation;
+        playerRB.linearVelocity = Vector3.zero;
+        playerRB.angularVelocity = Vector3.zero;
+    }
 }
 
 [System.Serializable]

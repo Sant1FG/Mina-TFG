@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class OilSpill : MonoBehaviour
@@ -14,6 +15,5 @@ public class OilSpill : MonoBehaviour
         //Slip logic handled in excavatorController.
         var excavator = other.GetComponentInChildren<ExcavatorController>();
         excavator.TriggerOilSlip(duration);
-
     }
 }
