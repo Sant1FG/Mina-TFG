@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameMenuController : MonoBehaviour
 {
@@ -6,8 +7,10 @@ public class GameMenuController : MonoBehaviour
     [SerializeField] private GameObject hudCanvas;
     [SerializeField] private GameObject pauseCanvas;
     [SerializeField] private GameObject gameOverCanvas;
-    [SerializeField] private GameObject optionsCanvas;
+    [SerializeField] private GameObject hudButtonsCanvas;
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private string menuSceneName = "MenuScene";
+
 
     void Start()
     {
@@ -28,38 +31,63 @@ public class GameMenuController : MonoBehaviour
         pauseCanvas.SetActive(true);
     }
 
-    public void showGameOver()
+    public void ShowGameOver()
     {
         gameOverCanvas.SetActive(true);
     }
 
-    public void showOptions()
+    public void ShowHUDButtons()
     {
-        optionsCanvas.SetActive(true);
+        hudButtonsCanvas.SetActive(true);
     }
 
-    public void hideTutorial()
+    public void HideTutorial()
     {
         tutorialCanvas.SetActive(false);
     }
 
-    public void hidePause()
+    public void HidePause()
     {
         pauseCanvas.SetActive(false);
     }
 
-    public void hideOptions()
+    public void HideHUDButtons()
     {
-        pauseCanvas.SetActive(false);
+        hudButtonsCanvas.SetActive(false);
     }
-    public void hideHUD()
+    public void HideHUD()
     {
         hudCanvas.SetActive(false);
     }
 
-    public void onCloseTutorial()
+    public void HideGameOver()
+    {
+        gameOverCanvas.SetActive(false);
+    }
+
+    public void OnCloseTutorial()
     {
         gameManager.StartSession();
+    }
+
+    public void OnPauseClicked()
+    {
+        gameManager.PauseSession();
+    }
+
+    public void OnResumeClicked()
+    {
+        gameManager.ResumeSession();
+    }
+
+    public void OnRestartClicked()
+    {
+        gameManager.RestartSession();
+    }
+
+    public void OnMainMenuClicked()
+    {
+        SceneManager.LoadScene(menuSceneName, LoadSceneMode.Single);
     }
 
 

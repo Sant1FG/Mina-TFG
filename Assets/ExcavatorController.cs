@@ -22,6 +22,8 @@ public class ExcavatorController : MonoBehaviour
     private float originalAngularDrag;
     private float originalMaxSteerAngle;
     private bool valuesSaved;
+    private bool controlsEnabled = false;
+
 
     private float steerAngle;
 
@@ -34,8 +36,6 @@ public class ExcavatorController : MonoBehaviour
 
     void Start()
     {
-        
-
         if (playerRB != null)
         {
             var com = playerRB.centerOfMass;
@@ -47,6 +47,8 @@ public class ExcavatorController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+
+        if (!controlsEnabled) return;
 
         if (oilSlipActive && Time.time >= oilSlipDuration)
         {
@@ -133,12 +135,22 @@ public class ExcavatorController : MonoBehaviour
         maxSteerAngle = originalMaxSteerAngle * oilSlipSteerFactor;
     }
 
-    public void Reposition(Vector3 position,Quaternion rotation)
+    public void Reposition(Vector3 position, Quaternion rotation)
     {
-         playerRB.position = position;
+        playerRB.position = position;
         playerRB.rotation = rotation;
         playerRB.linearVelocity = Vector3.zero;
         playerRB.angularVelocity = Vector3.zero;
+    }
+
+    public void EnableControls()
+    {
+        controlsEnabled = true;
+    }
+
+    public void DisableControls()
+    {
+        controlsEnabled = false;
     }
 }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 public class TimerController : MonoBehaviour
 {
     private float timeRemaining;
-    private bool running;
+    private bool running = false;
     private bool timeUpFired;
 
     public event Action<float> OnTick;

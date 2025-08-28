@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 public class ObstacleSpawner : MonoBehaviour
@@ -14,17 +15,21 @@ public class ObstacleSpawner : MonoBehaviour
     //How far can an obstacle spawn from the player's current position
     [SerializeField] private float playerSpawnDist = 15f;
     private List<Transform> obstaclePositions;
+    private List<GameObject> spawnedObstacles;
     //HashSet hace contains ++ rapidos
     private HashSet<Transform> occupied;
-    public event Action<string,float> onObstacleSpawn;
+    public event Action<string, float> onObstacleSpawn;
 
     public float spawnInterval = 10f; // cada 30 s
     private float nextSpawn;
+
+    private bool spawningEnabled = false;
 
     private void Awake()
     {
         obstaclePositions = new List<Transform>();
         occupied = new HashSet<Transform>();
+        spawnedObstacles = new List<GameObject>();
 
         foreach (Transform position in internalPositions)
         {
@@ -41,6 +46,7 @@ public class ObstacleSpawner : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (!spawningEnabled) return;
         if (Time.time >= nextSpawn)
         {
             SpawnObstacle();
@@ -86,6 +92,7 @@ public class ObstacleSpawner : MonoBehaviour
 
         GameObject instance = Instantiate(obstacle, spot.position, Quaternion.identity);
         occupied.Add(spot);
+        spawnedObstacles.Add(instance);
         String spawnMessage = "";
         //GasObstacles necesitan timeController
         if (instance.TryGetComponent<ToxicGas>(out ToxicGas gas))
@@ -104,6 +111,34 @@ public class ObstacleSpawner : MonoBehaviour
 
         onObstacleSpawn?.Invoke(spawnMessage, 3f);
 
-        
+
+    }
+
+    public void ResetObstacleSpawner()
+    {
+        if (spawnedObstacles.Count == 0) return;
+
+        foreach (var item in spawnedObstacles)
+        {
+            Destroy(item);
+        }
+
+        // Vaciar listas
+        spawnedObstacles.Clear();
+        occupied.Clear();
+
+        // Reiniciar temporizador de spawn
+        nextSpawn = Time.time + spawnInterval;
+        ResumeSpawning();
+    }
+
+    public void ResumeSpawning()
+    {
+        spawningEnabled = true;
+    }
+
+    public void StopSpawning()
+    {
+        spawningEnabled = false;
     }
 }

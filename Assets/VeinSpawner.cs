@@ -18,22 +18,16 @@ public class VeinSpawner : MonoBehaviour
     private TerrainData terrainData;
 
     private List<Vector3> generatedVeins;
+    private List<GameObject> spawnedVeins;
 
 
     private void Awake()
     {
         generatedVeins = new List<Vector3>();
+        spawnedVeins = new List<GameObject>();
         terrainData = terrain.terrainData;
         terrainPos = terrain.transform.position;
         terrainSize = terrainData.size;
-    }
-
-    private void Start()
-    {
-        for (int i = 0; i < initialVeins; i++)
-        {
-            SpawnOneVein();
-        }
     }
 
     private bool SpawnOneVein()
@@ -43,8 +37,9 @@ public class VeinSpawner : MonoBehaviour
             return false;
         }
 
-        Instantiate(prefab, position, Quaternion.identity, transform);
+        GameObject spawned = Instantiate(prefab, position, Quaternion.identity, transform);
         generatedVeins.Add(position);
+        spawnedVeins.Add(spawned);
         return true;
     }
 
@@ -68,9 +63,6 @@ public class VeinSpawner : MonoBehaviour
             if (!InsideVolumeXZ(x, z)) continue;
             if (InsideObstacleRangeXZ(x, z)) continue;
 
-            Vector3 probe = new Vector3(x, bounds.center.y, z);
-            if (spawnArea.ClosestPoint(probe) != probe) continue;
-
             float nx = (x - terrainPos.x) / terrainSize.x;
             float nz = (z - terrainPos.z) / terrainSize.z;
 
@@ -85,7 +77,7 @@ public class VeinSpawner : MonoBehaviour
                 float dx = possible.x - generatedVeins[j].x;
                 float dz = possible.z - generatedVeins[j].z;
                 float d2 = dx * dx + dz * dz;
-                if (d2 < sqrDistXZ ) { tooClose = true; break; }
+                if (d2 < sqrDistXZ) { tooClose = true; break; }
             }
 
             if (tooClose) continue;
@@ -116,22 +108,38 @@ public class VeinSpawner : MonoBehaviour
 
     // 2) Validar que (x,z) cae dentro del volumen con RaycastAll (paridad impar)
     bool InsideVolumeXZ(float x, float z)
-{
-    Bounds b = spawnArea.bounds;
-    Vector3 origin = new Vector3(x, b.max.y + 5f, z);
-    Vector3 dir = Vector3.down;
-    float dist = b.size.y + 10f;
+    {
+        Bounds b = spawnArea.bounds;
+        Vector3 origin = new Vector3(x, b.max.y + 5f, z);
+        Vector3 dir = Vector3.down;
+        float dist = b.size.y + 10f;
 
-    // Filtra por la capa del volumen si puedes (crea una Layer "SpawnVolume")
-    var hits = Physics.RaycastAll(origin, dir, dist, ~0, QueryTriggerInteraction.Ignore);
+        // Filtra por la capa del volumen si puedes (crea una Layer "SpawnVolume")
+        var hits = Physics.RaycastAll(origin, dir, dist, ~0, QueryTriggerInteraction.Ignore);
 
-    int count = 0;
-    for (int i = 0; i < hits.Length; i++)
-        if (hits[i].collider == spawnArea) count++;
+        int count = 0;
+        for (int i = 0; i < hits.Length; i++)
+            if (hits[i].collider == spawnArea) count++;
 
-    return (count % 2) == 1; // impar = dentro
+        return (count % 2) == 1; // impar = dentro
+    }
+
+    public void ResetVeinSpawner()
+    {
+        foreach (var vein in spawnedVeins)
+        {
+            if (vein != null) Destroy(vein);
+        }
+
+        generatedVeins.Clear();
+        spawnedVeins.Clear();
+
+        for (int i = 0; i < initialVeins; i++)
+        {
+            SpawnOneVein();
+        }
+    }
+
+
 }
-
-
-     }
     

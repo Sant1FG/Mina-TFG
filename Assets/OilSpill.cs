@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class OilSpill : MonoBehaviour
 {
-
-
     [SerializeField] private float duration = 2.0f;
 
     private void OnTriggerEnter(Collider other)

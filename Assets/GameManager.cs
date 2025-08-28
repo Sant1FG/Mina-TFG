@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -9,37 +10,33 @@ public class GameManager : MonoBehaviour
     [SerializeField] private InteractionController interaction;
     [SerializeField] private ExcavatorController excavator;
     [SerializeField] private GameMenuController gameMenu;
+    [SerializeField] private ObstacleSpawner obstacleSpawner;
+    [SerializeField] private VeinSpawner veinSpawner;
+    [SerializeField] private CameraController cameraController;
     [SerializeField] private KeyCode respawnKey = KeyCode.T;
     [SerializeField] private Transform playerSpawn;
+
 
     public SessionState state;
 
     void OnEnable()
     {
-        if (timer != null) timer.OnTimeUp += StopSession;
+        if (timer != null) timer.OnTimeUp += EndSession;
         if (interaction != null)
         {
             interaction.OnCollectCoal += HandleCollectCoal;
             interaction.OnDepositCoal += HandleDepositCoal;
         }
-
-        // Si insistes en reenviar toasts desde el GM, deja esto (pero mejor pásalo al HUD o a un canal SO):
-        // if (spawner) spawner.onObstacleSpawn += HandleNotificationToast;
-        // if (oil)     oil.OnOilSlip         += HandleNotificationToast;
-        // if (gas)     gas.OnGasEnter        += HandleNotificationToast;
     }
 
     void OnDisable()
     {
-        if (timer != null) timer.OnTimeUp -= StopSession;
+        if (timer != null) timer.OnTimeUp -= EndSession;
         if (interaction != null)
         {
             interaction.OnCollectCoal -= HandleCollectCoal;
             interaction.OnDepositCoal -= HandleDepositCoal;
         }
-        // if (spawner) spawner.onObstacleSpawn -= HandleNotificationToast;
-        // if (oil)     oil.OnOilSlip          -= HandleNotificationToast;
-        // if (gas)     gas.OnGasEnter         -= HandleNotificationToast;
     }
 
     private void Update()
@@ -55,35 +52,91 @@ public class GameManager : MonoBehaviour
 
     public void StartSession()
     {
+        Time.timeScale = 1f;
         state = new SessionState();
 
         // Inicializa según configuración
         state.score = 0;
         state.coalInDepot = 0;
         state.isRunning = true;
-        //Colocar al jugador al inicio partida
-        RespawnPlayer();
+
+        //Instancia la camara
+        cameraController.SetPlayer(excavator.transform);
 
         // Distribuye referencias a otros controladores
         interaction.SetSessionState(state);
         interaction.setConfig(config);
 
-        timer.StartTimer(config.initialTimeSeconds);
+        obstacleSpawner.ResetObstacleSpawner();
+        veinSpawner.ResetVeinSpawner();
 
-        gameMenu.hideTutorial();
+        //Activa controles y coloca al jugador al inicio partida
+        RespawnPlayer();
+        excavator.EnableControls();
+
+        //Update inicial hud
+        hud.SetScoreText(state.score);
+        hud.SetCoalText(state.coalInDepot);
+        hud.SetDepositMaxText(config.depositMax);
+        hud.HideInteractionText();
+        hud.ClearNotificationsToast();
+
+        //Hide other screens
+        gameMenu.HideTutorial();
+        gameMenu.HidePause();
+        gameMenu.HideGameOver();
         //Activate and update initial HUD
         gameMenu.ShowHUD();
-        gameMenu.showOptions();
+        gameMenu.ShowHUDButtons();
+
+        timer.StartTimer(config.initialTimeSeconds);
+
     }
 
-    private void StopSession()
+    public void PauseSession()
     {
+        Time.timeScale = 0f;
+        timer.Pause();
+        obstacleSpawner.StopSpawning();
+        excavator.DisableControls();
+        hud.HideInteractionText();
+        hud.ClearNotificationsToast();
+        gameMenu.HideHUDButtons(); 
+        gameMenu.ShowPause();
+    }
+
+    public void ResumeSession()
+    {
+        Time.timeScale = 1f;
+        timer.Resume();
+        obstacleSpawner.ResumeSpawning();
+        excavator.EnableControls();
+        gameMenu.ShowHUDButtons();   
+        gameMenu.HidePause();
+    }
+
+    public void EndSession()
+    {
+        if (!state.isRunning) return;
         Debug.Log("Time is 0. GAME OVER");
+        Time.timeScale = 0f;
         state.isRunning = false;
-        gameMenu.hidePause();
-        gameMenu.hideHUD();
-        gameMenu.hideOptions();
-        gameMenu.showGameOver();
+        timer.Pause();
+        excavator.DisableControls();
+        obstacleSpawner.StopSpawning();
+        hud.HideInteractionText();
+        hud.ClearNotificationsToast();
+        gameMenu.HidePause();
+        gameMenu.HideHUDButtons();
+        gameMenu.HideHUD();
+        gameMenu.ShowGameOver();
+    }
+
+    public void RestartSession()
+    {
+        gameMenu.HidePause();
+        gameMenu.HideGameOver();
+        StartSession();
     }
 
     private void RespawnPlayer()
