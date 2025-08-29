@@ -16,8 +16,6 @@ public class ToxicGas : MonoBehaviour
         Debug.Log("Forklift entered toxic gas obstacle");
         //Reduce time on timeController.
         var interaction = other.GetComponentInChildren<InteractionController>();
-        //if (interaction != null)
-        //interaction.NotifyGasEntered(this);
         timerController.RemoveTime(5f);
     }
 

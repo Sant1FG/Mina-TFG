@@ -506,7 +506,6 @@ MonoBehaviour:
   timerText: {fileID: 360174393}
   scoreText: {fileID: 367617664}
   depositMaxText: {fileID: 2001588087}
-  finalScoreText: {fileID: 889450445}
   timer: {fileID: 916235356}
   spawner: {fileID: 532802586}
   interaction: {fileID: 1110501582}
@@ -1821,7 +1820,6 @@ MonoBehaviour:
   cameraController: {fileID: 5655709463645206157}
   respawnKey: 116
   playerSpawn: {fileID: 998631725}
-  cameraRespawnTransform: {fileID: 2022099918}
   state:
     score: 0
     coalInDepot: 0
@@ -7095,7 +7093,6 @@ Transform:
   - {fileID: 998631725}
   - {fileID: 467770565}
   - {fileID: 605448867}
-  - {fileID: 2022099918}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &875930345
@@ -10080,7 +10077,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Entrega la carga en la central t\xE9rmica"
+  m_text: "Entr\xE9ga la carga en la central t\xE9rmica"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3bab3d3ee137cc94fbfb578aee9e587b, type: 2}
   m_sharedMaterial: {fileID: 2377117964426701420, guid: 3bab3d3ee137cc94fbfb578aee9e587b, type: 2}
@@ -12288,7 +12285,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Entrega la carga en la central t\xE9rmica"
+  m_text: "Entr\xE9ga la carga en la central t\xE9rmica"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3bab3d3ee137cc94fbfb578aee9e587b, type: 2}
   m_sharedMaterial: {fileID: 2377117964426701420, guid: 3bab3d3ee137cc94fbfb578aee9e587b, type: 2}
@@ -13612,37 +13609,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2016441770}
   m_CullTransparentMesh: 1
---- !u!1 &2022099917
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2022099918}
-  m_Layer: 0
-  m_Name: CameraReference
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2022099918
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2022099917}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.013148683, y: 0.98479277, z: -0.15028992, w: 0.086158335}
-  m_LocalPosition: {x: 404.4885, y: 22.41027, z: 682.5026}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 872838893}
-  m_LocalEulerAnglesHint: {x: 17.354, y: 170, z: 0}
 --- !u!1 &2032107668
 GameObject:
   m_ObjectHideFlags: 0
@@ -14636,7 +14602,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   player: {fileID: 1110501581}
-  distance: 7
+  distance: 6.4
   height: 3.5
   rotationDamping: 3
   heightDamping: 2
@@ -14864,6 +14830,10 @@ PrefabInstance:
     - target: {fileID: 6366065298403875574, guid: 24767f99a2cf295449cf3c2259ee83cb, type: 3}
       propertyPath: oilSlipSteerFactor
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6366065298403875574, guid: 24767f99a2cf295449cf3c2259ee83cb, type: 3}
+      propertyPath: centerOfMassYOffset
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6697626643997335808, guid: 24767f99a2cf295449cf3c2259ee83cb, type: 3}
       propertyPath: m_IsActive

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.Rendering;
+using System.Linq;
 using UnityEngine;
 
 public class VeinSpawner : MonoBehaviour
@@ -16,14 +16,14 @@ public class VeinSpawner : MonoBehaviour
     private Vector3 terrainPos;
     private Vector3 terrainSize;
     private TerrainData terrainData;
-
-    private List<Vector3> generatedVeins;
+    private Dictionary<CoalVein, Vector3> veinPositions;
     private List<GameObject> spawnedVeins;
-
+    private static RaycastHit[] rayCastBuffer = new RaycastHit[16];
+    private readonly HashSet<CoalVein> replaceController = new();
 
     private void Awake()
     {
-        generatedVeins = new List<Vector3>();
+        veinPositions = new Dictionary<CoalVein, Vector3>();
         spawnedVeins = new List<GameObject>();
         terrainData = terrain.terrainData;
         terrainPos = terrain.transform.position;
@@ -38,18 +38,46 @@ public class VeinSpawner : MonoBehaviour
         }
 
         GameObject spawned = Instantiate(prefab, position, Quaternion.identity, transform);
-        generatedVeins.Add(position);
-        spawnedVeins.Add(spawned);
+        CoalVein vein = spawned.GetComponent<CoalVein>();
+        if (vein != null)
+        {
+            veinPositions.Add(vein, position);
+            spawnedVeins.Add(vein.gameObject);
+        }
         return true;
     }
 
-    public void ReplaceVein(GameObject veinCollected)
+    public void ReplaceVein(CoalVein veinCollected)
     {
-        int index = generatedVeins.FindIndex(p => Vector3.SqrMagnitude(p - veinCollected.transform.position) < 0.01f);
-        if (index >= 0) generatedVeins.RemoveAt(index);
-        Destroy(veinCollected);
-        SpawnOneVein();
+        if (!veinCollected || replaceController.Contains(veinCollected)) return;
+        replaceController.Add(veinCollected);
+        StartCoroutine(ReplaceVeinEndOfFrame(veinCollected));
     }
+
+    private System.Collections.IEnumerator ReplaceVeinEndOfFrame(CoalVein vein)
+    {
+        if (!vein) yield break;
+
+        foreach (var c in vein.GetComponentsInChildren<Collider>()) c.enabled = false;
+        foreach (var r in vein.GetComponentsInChildren<Renderer>()) r.enabled = false;
+        vein.gameObject.SetActive(false);
+
+        yield return new WaitForEndOfFrame();
+
+        if (!FindValidPoint(out Vector3 position))
+        {
+            Debug.Log("No available positon for collected vein");
+            yield break;
+        }
+
+        veinPositions[vein] = position;
+        vein.transform.SetPositionAndRotation(position, Quaternion.identity);
+        foreach (var c in vein.GetComponentsInChildren<Collider>()) if (c) c.enabled = true;
+        foreach (var r in vein.GetComponentsInChildren<Renderer>()) if (r) r.enabled = true;
+        vein.gameObject.SetActive(true);
+        replaceController.Remove(vein);
+    }
+
 
     private bool FindValidPoint(out Vector3 position)
     {
@@ -72,11 +100,11 @@ public class VeinSpawner : MonoBehaviour
             Vector3 possible = new Vector3(x, y, z);
             bool tooClose = false;
             float sqrDistXZ = minDistanceXZ * minDistanceXZ;
-            for (int j = 0; j < generatedVeins.Count; j++)
+            foreach (var pos in veinPositions.Values)
             {
-                float dx = possible.x - generatedVeins[j].x;
-                float dz = possible.z - generatedVeins[j].z;
-                float d2 = dx * dx + dz * dz;
+                float dx = possible.x - pos.x;
+                float dz = possible.z - pos.z;
+                float d2 = dx*dx + dz*dz;
                 if (d2 < sqrDistXZ) { tooClose = true; break; }
             }
 
@@ -115,11 +143,18 @@ public class VeinSpawner : MonoBehaviour
         float dist = b.size.y + 10f;
 
         // Filtra por la capa del volumen si puedes (crea una Layer "SpawnVolume")
-        var hits = Physics.RaycastAll(origin, dir, dist, ~0, QueryTriggerInteraction.Ignore);
+        int hits = Physics.RaycastNonAlloc(origin, dir, rayCastBuffer, dist,~0, QueryTriggerInteraction.Ignore);
+
+        if (hits == rayCastBuffer.Length)
+        {
+        // Buffer lleno; ampliamos y repetimos una vez (extremadamente raro)
+        rayCastBuffer = new RaycastHit[rayCastBuffer.Length * 2];
+        hits = Physics.RaycastNonAlloc(origin, dir, rayCastBuffer, dist, ~0, QueryTriggerInteraction.Ignore);
+        }
 
         int count = 0;
-        for (int i = 0; i < hits.Length; i++)
-            if (hits[i].collider == spawnArea) count++;
+        for (int i = 0; i < hits; i++)
+            if (rayCastBuffer[i].collider == spawnArea) count++;
 
         return (count % 2) == 1; // impar = dentro
     }
@@ -131,7 +166,7 @@ public class VeinSpawner : MonoBehaviour
             if (vein != null) Destroy(vein);
         }
 
-        generatedVeins.Clear();
+        veinPositions.Clear();
         spawnedVeins.Clear();
 
         for (int i = 0; i < initialVeins; i++)

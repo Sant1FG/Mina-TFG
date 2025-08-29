@@ -14,26 +14,25 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private List<GameObject> obstaclePrefabs;
     //How far can an obstacle spawn from the player's current position
     [SerializeField] private float playerSpawnDist = 15f;
-    private List<Transform> obstaclePositions;
-    private List<GameObject> spawnedObstacles;
-    //HashSet hace contains ++ rapidos
-    private HashSet<Transform> occupied;
     public event Action<string, float> onObstacleSpawn;
+    private Dictionary<Vector3, GameObject> obstacleDictionary;
+    private HashSet<Vector3> activatedPositions;
+    private List<Vector3> obstaclePositions;
 
-    public float spawnInterval = 10f; // cada 30 s
+    public float spawnInterval = 10f;
     private float nextSpawn;
 
     private bool spawningEnabled = false;
 
     private void Awake()
     {
-        obstaclePositions = new List<Transform>();
-        occupied = new HashSet<Transform>();
-        spawnedObstacles = new List<GameObject>();
+        obstacleDictionary = new Dictionary<Vector3, GameObject>();
+        activatedPositions = new HashSet<Vector3>();
+        obstaclePositions = new List<Vector3>();
 
-        foreach (Transform position in internalPositions)
+        foreach (Transform transform in internalPositions)
         {
-            obstaclePositions.Add(position);
+            obstaclePositions.Add(transform.position);
         }
     }
 
@@ -49,26 +48,35 @@ public class ObstacleSpawner : MonoBehaviour
         if (!spawningEnabled) return;
         if (Time.time >= nextSpawn)
         {
-            SpawnObstacle();
+            ActivateRandomObstacle();
             nextSpawn = Time.time + spawnInterval;
         }
     }
 
-    private void SpawnObstacle()
+    private void InstantiateObstacles()
     {
-        // buscar spots libres
-        List<Transform> freeSpots = new List<Transform>();
-        foreach (var s in obstaclePositions)
-            if (!occupied.Contains(s)) freeSpots.Add(s);
-
-        if (freeSpots.Count == 0) return; // ya llenos
-        Transform spot = null;
-        List<Transform> validSpots = new List<Transform>();
-        float sqrMinDistance = playerSpawnDist * playerSpawnDist;
-        foreach (Transform currentSpot in freeSpots)
+        foreach (Vector3 position in obstaclePositions)
         {
-            float dx = currentSpot.position.x - player.position.x;
-            float dz = currentSpot.position.z - player.position.z;
+            int index = Random.Range(0, obstaclePrefabs.Count);
+            GameObject obstacle = obstaclePrefabs[index];
+            GameObject instance = Instantiate(obstacle,position, Quaternion.identity);
+            instance.SetActive(false);
+            obstacleDictionary.Add(position,instance);
+        }
+    }
+
+    private void ActivateRandomObstacle()
+    {
+        List<Vector3> freeSpots = new List<Vector3>();
+        foreach (Vector3 s in obstacleDictionary.Keys) if (!activatedPositions.Contains(s)) freeSpots.Add(s);
+        //Test if player is close enough to any obstacle
+        if (freeSpots.Count == 0) return;
+        List<Vector3> validSpots = new List<Vector3>();
+        float sqrMinDistance = playerSpawnDist * playerSpawnDist;
+        foreach (Vector3 currentSpot in freeSpots)
+        {
+            float dx = currentSpot.x - player.position.x;
+            float dz = currentSpot.z - player.position.z;
             float d = dx * dx + dz * dz;
             if (d > sqrMinDistance)
             {
@@ -76,7 +84,6 @@ public class ObstacleSpawner : MonoBehaviour
             }
 
         }
-
         if (validSpots.Count == 0)
         {
             Debug.Log("Player adjacent to all free spots.");
@@ -84,23 +91,24 @@ public class ObstacleSpawner : MonoBehaviour
         }
 
         // elegir spot aleatorio
-        spot = validSpots[UnityEngine.Random.Range(0, validSpots.Count)];
+        Vector3 randomValidPosition = validSpots[UnityEngine.Random.Range(0, validSpots.Count)];
+        GameObject selected = obstacleDictionary[randomValidPosition];
+        selected.SetActive(true);
+        activatedPositions.Add(randomValidPosition);
+        ActivateObstacleNotification(selected);
 
-        //elegir obstaculo aleatoria de la lista de prefabs
-        int index = Random.Range(0, obstaclePrefabs.Count);
-        GameObject obstacle = obstaclePrefabs[index];
+    }
 
-        GameObject instance = Instantiate(obstacle, spot.position, Quaternion.identity);
-        occupied.Add(spot);
-        spawnedObstacles.Add(instance);
+    private void ActivateObstacleNotification(GameObject activated)
+    {
         String spawnMessage = "";
         //GasObstacles necesitan timeController
-        if (instance.TryGetComponent<ToxicGas>(out ToxicGas gas))
+        if (activated.TryGetComponent<ToxicGas>(out ToxicGas gas))
         {
             gas.AddTimerController(timer);
             spawnMessage = "PRECAUCION: Se ha detectado una bolsa de gas tóxico";
         }
-        else if (instance.TryGetComponent<OilSpill>(out OilSpill oil))
+        else if (activated.TryGetComponent<OilSpill>(out OilSpill oil))
         {
             spawnMessage = "PRECAUCION: Se ha derramado aceite resbaladizo";
         }
@@ -110,23 +118,22 @@ public class ObstacleSpawner : MonoBehaviour
         }
 
         onObstacleSpawn?.Invoke(spawnMessage, 3f);
-
-
     }
 
     public void ResetObstacleSpawner()
     {
-        if (spawnedObstacles.Count == 0) return;
+        if (obstaclePositions.Count == 0) return;
 
-        foreach (var item in spawnedObstacles)
+        foreach (var item in obstacleDictionary.Values)
         {
-            Destroy(item);
+            if(item != null) Destroy(item);
         }
 
         // Vaciar listas
-        spawnedObstacles.Clear();
-        occupied.Clear();
+        obstacleDictionary.Clear();
+        activatedPositions.Clear();
 
+        InstantiateObstacles();
         // Reiniciar temporizador de spawn
         nextSpawn = Time.time + spawnInterval;
         ResumeSpawning();

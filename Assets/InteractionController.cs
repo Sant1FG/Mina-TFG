@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
@@ -9,8 +10,8 @@ public class InteractionController : MonoBehaviour
     [SerializeField] private Transform player; // raíz de la excavadora (para medir distancia)
     [SerializeField] private VeinSpawner spawner;
     [SerializeField] private KeyCode collectKey = KeyCode.E;
-    private CoalVein veinTarget;
-    private Nexus nexusTarget;
+    private CoalVein closestVeinInRange;
+    private Nexus nexusInRange;
     private SessionState state;
     private GameConfig config;
 
@@ -26,7 +27,7 @@ public class InteractionController : MonoBehaviour
         state = sessionState;
     }
 
-    public void setConfig(GameConfig gameConfig)
+    public void SetConfig(GameConfig gameConfig)
     {
         config = gameConfig;
     }
@@ -35,20 +36,19 @@ public class InteractionController : MonoBehaviour
     {
         if (Input.GetKeyDown(collectKey))
         {
-            if (nexusTarget != null)
+            if (nexusInRange != null)
             {
                 Debug.Log("Pulsado boton interaccion al lado de nexo");
-                TryDeposit(nexusTarget);
+                TryDeposit(nexusInRange);
                 OnShowInteraction?.Invoke(false);
 
             }
-            else if (veinTarget != null)
+            else if (closestVeinInRange != null)
             {
                 Debug.Log("Pulsado boton interaccion al lado de veta");
-                if (TryCollect(veinTarget))
+                if (TryCollect(closestVeinInRange))
                 {
-                    UpdateVein();
-                    return;
+                    RefreshInteractionTarget();
                 }
             }
         }
@@ -60,34 +60,34 @@ public class InteractionController : MonoBehaviour
     {
         if (v == null) return;
         veinsInRange.Add(v);
-        UpdateVein();
+        RefreshInteractionTarget();
     }
 
     public void NotifyVeinExited(CoalVein v)
     {
         if (v == null) return;
         veinsInRange.Remove(v);
-        veinTarget = SelectClosestVein();
+        closestVeinInRange = SelectClosestVein();
 
-        if (veinTarget == v)
+        if (closestVeinInRange == v)
         {
-            veinTarget = null;
+            closestVeinInRange = null;
         }
-        UpdateVein();
+        RefreshInteractionTarget();
     }
 
     //Called from Nexus.cs
     public void NotifyNexusEntered(Nexus nexus)
     {
         if (nexus == null || state == null) return;
-        nexusTarget = nexus;
+        nexusInRange = nexus;
         if(state.coalInDepot > 0) OnShowInteraction?.Invoke(true);    
     }
 
     public void NotifyNexusExited(Nexus nexus)
     {
         if (nexus == null) return;
-        nexusTarget = null;
+        nexusInRange = null;
         OnShowInteraction?.Invoke(false);
     }
 
@@ -133,14 +133,14 @@ public class InteractionController : MonoBehaviour
 
 
         veinsInRange.Remove(vein);
-        //Destroy(vein.gameObject);
-        spawner.ReplaceVein(vein.gameObject);
 
-        if (veinTarget == vein)
+        if (closestVeinInRange == vein)
         {
-            veinTarget = null;
+            closestVeinInRange = null;
         }
 
+        spawner.ReplaceVein(vein);
+        
         Debug.Log("Recogida con exito");
         return true;
     }
@@ -156,17 +156,17 @@ public class InteractionController : MonoBehaviour
             return false;
 
         }
-        OnDepositCoal?.Invoke();     
+        OnDepositCoal?.Invoke();
         Debug.Log("Deposito con exito");
         OnNotificationToast?.Invoke("Carbon depositado! Añadiendo tiempo limite", 3f);
         return true;
     }
 
-    private void UpdateVein()
+    private void RefreshInteractionTarget()
     {
-        veinTarget = SelectClosestVein();
+        closestVeinInRange = SelectClosestVein();
 
-        if (veinTarget != null)
+        if (closestVeinInRange != null)
         {
             OnShowInteraction?.Invoke(true);
             return;

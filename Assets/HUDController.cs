@@ -12,6 +12,7 @@ public class HUDController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI depositMaxText;
+    [SerializeField] private TextMeshProUGUI finalScoreText;
      //Observer
     [SerializeField] private TimerController timer;
     [SerializeField] private ObstacleSpawner spawner;
@@ -64,6 +65,11 @@ public class HUDController : MonoBehaviour
     public void SetDepositMaxText(int value)
     {
         depositMaxText.text = value.ToString();
+    }
+
+    public void SetFinalScoreText(int value)
+    {
+        finalScoreText.text = value.ToString();
     }
 
     public void ShowInteractionText()

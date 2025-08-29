@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private CameraController cameraController;
     [SerializeField] private KeyCode respawnKey = KeyCode.T;
     [SerializeField] private Transform playerSpawn;
+    [SerializeField] private Transform cameraRespawnTransform;
 
 
     public SessionState state;
@@ -65,9 +66,10 @@ public class GameManager : MonoBehaviour
 
         // Distribuye referencias a otros controladores
         interaction.SetSessionState(state);
-        interaction.setConfig(config);
+        interaction.SetConfig(config);
 
         obstacleSpawner.ResetObstacleSpawner();
+        obstacleSpawner.ResumeSpawning();
         veinSpawner.ResetVeinSpawner();
 
         //Activa controles y coloca al jugador al inicio partida
@@ -129,6 +131,7 @@ public class GameManager : MonoBehaviour
         gameMenu.HidePause();
         gameMenu.HideHUDButtons();
         gameMenu.HideHUD();
+        hud.SetFinalScoreText(state.score);
         gameMenu.ShowGameOver();
     }
 
@@ -143,6 +146,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("GameManager: ");
         excavator.Reposition(playerSpawn.position, playerSpawn.rotation);
+        cameraController.SetFixedPose(cameraRespawnTransform, excavator.transform);
         state.coalInDepot = 0;
         hud.SetCoalText(0);
 
