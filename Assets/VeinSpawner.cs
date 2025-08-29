@@ -58,8 +58,6 @@ public class VeinSpawner : MonoBehaviour
     {
         if (!vein) yield break;
 
-        foreach (var c in vein.GetComponentsInChildren<Collider>()) c.enabled = false;
-        foreach (var r in vein.GetComponentsInChildren<Renderer>()) r.enabled = false;
         vein.gameObject.SetActive(false);
 
         yield return new WaitForEndOfFrame();
@@ -72,8 +70,6 @@ public class VeinSpawner : MonoBehaviour
 
         veinPositions[vein] = position;
         vein.transform.SetPositionAndRotation(position, Quaternion.identity);
-        foreach (var c in vein.GetComponentsInChildren<Collider>()) if (c) c.enabled = true;
-        foreach (var r in vein.GetComponentsInChildren<Renderer>()) if (r) r.enabled = true;
         vein.gameObject.SetActive(true);
         replaceController.Remove(vein);
     }
