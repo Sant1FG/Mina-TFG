@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbd1317f7606eb541b60b4799d8f0483, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: Assembly-CSharp::GameConfig
-  initialTimeSeconds: 120
+  initialTimeSeconds: 150
   pointsPerCoalUnit: 10
   depositMax: 20
   timePerCoalUnit: 2

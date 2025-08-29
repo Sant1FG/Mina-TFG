@@ -15174,11 +15174,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6366065298403875574, guid: 24767f99a2cf295449cf3c2259ee83cb, type: 3}
       propertyPath: oilSlipMotorFactor
-      value: 0.45
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 6366065298403875574, guid: 24767f99a2cf295449cf3c2259ee83cb, type: 3}
       propertyPath: oilSlipSteerFactor
-      value: 0.35
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 6366065298403875574, guid: 24767f99a2cf295449cf3c2259ee83cb, type: 3}
       propertyPath: centerOfMassYOffset
