@@ -1,6 +1,10 @@
-using System.Security;
 using UnityEngine;
 
+/// <summary>
+/// Handles the driving of the excavator using WheelColliders.
+/// Reads player input, applies motor, break, steering and updates wheel meshes.
+/// Supports temporary worse handling when triggering an "oil slip" obstacle.
+/// </summary>
 public class ExcavatorController : MonoBehaviour
 {
 
@@ -10,14 +14,13 @@ public class ExcavatorController : MonoBehaviour
     public float mainPedalInput;
     public float steeringInput;
     [SerializeField] private float enginePower;
-    private float breakPower = 0f;
     [SerializeField] private float maxSteerAngle;
     [SerializeField] private float centerOfMassYOffset = -0.55f;
     private bool breakInput;
     [SerializeField] private float fullBrakeTorque = 20000f;
     [SerializeField] private float coastBrakeTorque = 1200f;
     [SerializeField] private float limiterCoastBrake = 1200f;
-    [SerializeField] private float maxSpeedKPH = 40f;     
+    [SerializeField] private float maxSpeedKPH = 40f;
     private bool oilSlipActive;
     private float oilSlipDuration;
     [SerializeField] private float oilSlipAngularDrag = 1.2f;
@@ -27,18 +30,22 @@ public class ExcavatorController : MonoBehaviour
     private float originalMaxSteerAngle;
     private bool valuesSaved;
     private bool controlsEnabled = false;
-
-
     private float steerAngle;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    /// <summary>
+    /// Called by Unity when the script instance is being loaded.
+    /// Stores the reference to the rigidBody.
+    /// </summary>
     private void Awake()
     {
-        //Game manager might call for Reposition before Start()
         playerRB = gameObject.GetComponent<Rigidbody>();
     }
 
-    void Start()
+    /// <summary>
+    /// Called by Unity before the first execution of Update.
+    /// Applies the center of mass vertical offset to improve stability.
+    /// </summary>
+    private void Start()
     {
         if (playerRB != null)
         {
@@ -48,8 +55,12 @@ public class ExcavatorController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    /// <summary>
+    /// Called by Unity once per Physics update.Handles the oil slip timers and values,reads player input, 
+    /// applies motor, break, steering and updates wheel meshes to sync with Wheel Colliders. 
+    /// Does not work if controls are not enabled.
+    /// </summary>
+    private void FixedUpdate()
     {
 
         if (!controlsEnabled) return;
@@ -57,7 +68,7 @@ public class ExcavatorController : MonoBehaviour
         if (oilSlipActive && Time.time >= oilSlipDuration)
         {
             oilSlipActive = false;
-            // Restaurar valores originales
+            //Restore original values
             playerRB.angularDamping = originalAngularDrag;
             maxSteerAngle = originalMaxSteerAngle;
         }
@@ -70,77 +81,83 @@ public class ExcavatorController : MonoBehaviour
 
     }
 
-    void GetInput()
+    /// <summary>
+    /// Reads player input from space key and the horizontal and vertical axis (WASD). 
+    /// </summary>
+    private void GetInput()
     {
         mainPedalInput = Input.GetAxis("Vertical");
         steeringInput = Input.GetAxis("Horizontal");
         breakInput = Input.GetKey(KeyCode.Space);
     }
 
-void ApplyMotor()
-{
-    // --- Velocidad horizontal y dirección de marcha
-    Vector3 v = playerRB.linearVelocity;
-    float speed = new Vector3(v.x, 0f, v.z).magnitude;
-    float speedKPH = speed * 3.6f;
-    float moveDir = Vector3.Dot(transform.forward, v) >= 0f ? 1f : -1f;
-
-    // --- Entrada de usuario
-    float throttle = mainPedalInput;           // [-1..1]
-    bool brakingByKey = breakInput;
-    bool coastingBrake = Mathf.Approximately(throttle, 0f) && speed > 0.5f;
-    bool brakingByReverse = (throttle != 0f) && (Mathf.Sign(throttle) != Mathf.Sign(moveDir)) && speed > 0.5f;
-
-    // --- Par motor base
-    float torque = enginePower * throttle;
-    if (oilSlipActive) torque *= oilSlipMotorFactor;
-
-    // --- Frenos
-    float brakeTorque = 0f;
-
-    if (brakingByKey || brakingByReverse)
+    /// <summary>
+    /// Calculates the motor and break torque based on player input, direction of travel, coasting
+    /// speed limit, reverse braking and the handling modifiers applied by an "oil slip" obstacle.
+    /// Applies those values to the wheels. 
+    /// </summary>
+    private void ApplyMotor()
     {
-        // Frenada fuerte y cortar motor
-        torque = 0f;
-        brakeTorque = fullBrakeTorque;
+        Vector3 v = playerRB.linearVelocity;
+        float speed = new Vector3(v.x, 0f, v.z).magnitude;
+        float speedKPH = speed * 3.6f;
+        float moveDir = Vector3.Dot(transform.forward, v) >= 0f ? 1f : -1f;
+
+
+        float throttle = mainPedalInput;
+        bool brakingByKey = breakInput;
+        bool coastingBrake = Mathf.Approximately(throttle, 0f) && speed > 0.5f;
+        bool brakingByReverse = (throttle != 0f) && (Mathf.Sign(throttle) != Mathf.Sign(moveDir)) && speed > 0.5f;
+
+        float torque = enginePower * throttle;
+        if (oilSlipActive) torque *= oilSlipMotorFactor;
+
+        float brakeTorque = 0f;
+
+        if (brakingByKey || brakingByReverse)
+        {
+            torque = 0f;
+            brakeTorque = fullBrakeTorque;
+        }
+        else if (coastingBrake)
+        {
+            //Breaks when gas is released
+            brakeTorque = coastBrakeTorque;
+        }
+
+        if (speedKPH >= maxSpeedKPH)
+        {
+            torque = 0f;
+            brakeTorque = Mathf.Max(brakeTorque, limiterCoastBrake);
+        }
+
+        colliders.FLWheel.motorTorque = torque;
+        colliders.FRWheel.motorTorque = torque;
+        colliders.RLWheel.motorTorque = torque;
+        colliders.RRWheel.motorTorque = torque;
+
+        // Break distribution 65 Front, 35 Rear.
+        float fFront = 0.65f, fRear = 0.35f;
+        colliders.FLWheel.brakeTorque = brakeTorque * fFront;
+        colliders.FRWheel.brakeTorque = brakeTorque * fFront;
+        colliders.RLWheel.brakeTorque = brakeTorque * fRear;
+        colliders.RRWheel.brakeTorque = brakeTorque * fRear;
     }
-    else if (coastingBrake)
-    {
-        // Freno motor al soltar gas
-        brakeTorque = coastBrakeTorque;
-    }
 
-    // --- Limitador de velocidad suave
-    if (speedKPH >= maxSpeedKPH)
-    {
-        torque = 0f; // siempre cortar motor cuando supera el tope
-        brakeTorque = Mathf.Max(brakeTorque, limiterCoastBrake);
-    }
-
-    // --- Aplicación: 4x4 (si quieres solo tracción trasera, aplica a RL/RR)
-    colliders.FLWheel.motorTorque = torque;
-    colliders.FRWheel.motorTorque = torque;
-    colliders.RLWheel.motorTorque = torque;
-    colliders.RRWheel.motorTorque = torque;
-
-    // Distribución de freno 65/35 (delante/detrás)
-    float fFront = 0.65f, fRear = 0.35f;
-    colliders.FLWheel.brakeTorque = brakeTorque * fFront;
-    colliders.FRWheel.brakeTorque = brakeTorque * fFront;
-    colliders.RLWheel.brakeTorque = brakeTorque * fRear;
-    colliders.RRWheel.brakeTorque = brakeTorque * fRear;
-}
-
-
-    void ApplySteering()
+    /// <summary>
+    /// Converts steering input into a wheel steer angle and applies it to the front wheels.
+    /// </summary>
+    private void ApplySteering()
     {
         steerAngle = maxSteerAngle * steeringInput;
         colliders.FLWheel.steerAngle = steerAngle;
         colliders.FRWheel.steerAngle = steerAngle;
     }
 
-    //Update the WheelMeshes to follow the WheelColliders
-    void UpdateWheelPosition()
+    /// <summary>
+    /// Synchronizes the visual wheel meshes with the corresponding wheel colliders.
+    /// </summary>
+    private void UpdateWheelPosition()
     {
         UpdateWheel(colliders.FRWheel, wheelMeshes.FRWheel);
         UpdateWheel(colliders.FLWheel, wheelMeshes.FLWheel);
@@ -148,7 +165,12 @@ void ApplyMotor()
         UpdateWheel(colliders.RLWheel, wheelMeshes.RLWheel);
     }
 
-    void UpdateWheel(WheelCollider coll, MeshRenderer wheelMesh)
+    /// <summary>
+    /// Copies the position and rotation of the wheel collider to the visual mesh.
+    /// </summary>
+    /// <param name="coll">Source wheel collider.</param>
+    /// <param name="wheelMesh">Target mesh renderer.</param>
+    private void UpdateWheel(WheelCollider coll, MeshRenderer wheelMesh)
     {
         Quaternion quat;
         Vector3 position;
@@ -157,12 +179,18 @@ void ApplyMotor()
         wheelMesh.transform.rotation = quat;
     }
 
+    /// <summary>
+    /// Triggers a temporary "oil slip" effect for a given duration.
+    /// Increases angular damping and reduces maximum steering angle and motor effectiveness.
+    /// Original values are restored when the effect ends.
+    /// </summary>
+    /// <param name="duration">Duration of the slip effect in seconds.</param>
     public void TriggerOilSlip(float duration)
     {
         oilSlipActive = true;
         oilSlipDuration = Time.time + duration;
 
-        // Guardar valores originales (una sola vez)
+        //Save original values
         if (!valuesSaved)
         {
             originalAngularDrag = playerRB.angularDamping;
@@ -170,14 +198,18 @@ void ApplyMotor()
             valuesSaved = true;
         }
 
-        // Ajustar temporalmente
         playerRB.angularDamping = oilSlipAngularDrag;
         maxSteerAngle = originalMaxSteerAngle * oilSlipSteerFactor;
     }
 
+    /// <summary>
+    /// Removes all forces affecting the vehicle and safely repositions it to provided position and rotation.
+    /// </summary>
+    /// <param name="position">Target world position.</param>
+    /// <param name="rotation">Target world rotation.</param>
     public void Reposition(Vector3 position, Quaternion rotation)
     {
-        const float freezeBrake = 30000f; 
+        const float freezeBrake = 30000f;
         colliders.FLWheel.motorTorque = 0f;
         colliders.FRWheel.motorTorque = 0f;
         colliders.RLWheel.motorTorque = 0f;
@@ -196,20 +228,29 @@ void ApplyMotor()
 
         playerRB.position = position;
         playerRB.rotation = rotation;
-      
+
     }
 
+    /// <summary>
+    /// Enables player controls for the vehicle.
+    /// </summary>
     public void EnableControls()
     {
         controlsEnabled = true;
     }
 
+    /// <summary>
+    /// Disables player controls for the vehicle.
+    /// </summary>
     public void DisableControls()
     {
         controlsEnabled = false;
     }
 }
 
+/// <summary>
+/// Group of wheel collider references
+/// </summary>
 [System.Serializable]
 public class WheelColliders {
 
@@ -220,6 +261,9 @@ public class WheelColliders {
 
 }
 
+/// <summary>
+/// Group of wheel meshes references.
+/// </summary>
 [System.Serializable]
 public class WheelMeshes
 {

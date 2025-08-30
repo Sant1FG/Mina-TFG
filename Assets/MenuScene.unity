@@ -204,7 +204,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 918633083}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: onQuitClicked
+        m_MethodName: OnQuitClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1253,7 +1253,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 918633083}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: onPlayClicked
+        m_MethodName: OnPlayClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
