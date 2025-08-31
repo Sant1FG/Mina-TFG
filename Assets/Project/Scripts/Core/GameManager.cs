@@ -197,7 +197,7 @@ public class GameManager : MonoBehaviour
         state.coalInDepot = 0;
         hud.SetCoalText(0);
 
-        hud.ShowNotificationToast("Vehiculo recolocado. Deposito vaciado", 2f);
+        hud.ShowNotificationToast("Vehículo recolocado. Depósito vaciado", 2f);
     }
 
     /// <summary>
