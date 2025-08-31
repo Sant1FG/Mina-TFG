@@ -24,6 +24,7 @@ public class HUDController : MonoBehaviour
     private Coroutine notificationCoroutine;
     
     /// <summary>
+    /// Called by Unity when the script instance is being loaded.
     /// Initializes HUD visibility, hiding optionals panels at the start.
     /// </summary>
     private void Awake()

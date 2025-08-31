@@ -191,7 +191,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void RespawnPlayer()
     {
-        Debug.Log("GameManager: ");
+        Debug.Log("GameManager: Respawning player");
         excavator.Reposition(playerSpawn.position, playerSpawn.rotation);
         cameraController.SetFixedPose(cameraRespawnTransform, excavator.transform);
         state.coalInDepot = 0;
