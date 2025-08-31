@@ -139,15 +139,15 @@ public class ObstacleSpawner : MonoBehaviour
         if (activated.TryGetComponent<ToxicGas>(out ToxicGas gas))
         {
             gas.AddTimerController(timer);
-            spawnMessage = "PRECAUCION: Se ha detectado una bolsa de gas tóxico";
+            spawnMessage = "PRECAUCIÓN: Se ha detectado una bolsa de gas tóxico";
         }
         else if (activated.TryGetComponent<OilSpill>(out OilSpill oil))
         {
-            spawnMessage = "PRECAUCION: Se ha derramado aceite resbaladizo";
+            spawnMessage = "PRECAUCIÓN: Se ha derramado aceite resbaladizo";
         }
         else
         {
-            spawnMessage = "PRECAUCION: Ha ocurrido un derrumbe";
+            spawnMessage = "PRECAUCIÓN: Ha ocurrido un derrumbe";
         }
 
         OnObstacleSpawn?.Invoke(spawnMessage, 3f);

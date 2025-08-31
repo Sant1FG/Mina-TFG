@@ -191,7 +191,7 @@ public class InteractionController : MonoBehaviour
         if (state.coalInDepot >= config.depositMax)
         {
             Debug.Log("InteractionController: Deposit is full");
-            OnNotificationToast?.Invoke("Deposito lleno. Entrega el carbón en la central", 3f);
+            OnNotificationToast?.Invoke("Depósito lleno. Entrega el carbón en la central", 3f);
             return false;
 
         }
@@ -228,13 +228,13 @@ public class InteractionController : MonoBehaviour
         if (state.coalInDepot <= 0)
         {
             Debug.Log("Deposito vacio");
-            OnNotificationToast?.Invoke("Deposito vacio. Recoge carbon en la mina", 3f);
+            OnNotificationToast?.Invoke("Depósito vacío. Recoge carbón en la mina", 3f);
             return false;
 
         }
         OnDepositCoal?.Invoke();
         Debug.Log("Deposito con exito");
-        OnNotificationToast?.Invoke("Carbon depositado! Añadiendo tiempo limite", 3f);
+        OnNotificationToast?.Invoke("Carbón depositado! Añadiendo tiempo limite", 3f);
         return true;
     }
 
