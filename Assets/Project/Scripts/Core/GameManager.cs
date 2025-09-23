@@ -16,9 +16,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private ObstacleSpawner obstacleSpawner;
     [SerializeField] private VeinSpawner veinSpawner;
     [SerializeField] private CameraController cameraController;
+    [SerializeField] private LeaderboardManager leaderboardManager;
     [SerializeField] private KeyCode respawnKey = KeyCode.T;
     [SerializeField] private Transform playerSpawn;
     [SerializeField] private Transform cameraRespawnTransform;
+
     public SessionState state;
 
     /// <summary>
@@ -173,6 +175,15 @@ public class GameManager : MonoBehaviour
         hud.ClearNotificationsToast();
         hud.SetFinalScoreText(state.score);
         gameMenu.ShowGameOverUI();
+
+        if (state.score > leaderboardManager.LowestHighScore())
+        {
+            gameMenu.ShowLeaderboardInput();
+        }
+        else
+        {
+            gameMenu.HideLeaderboardInput();
+        }
     }
 
     /// <summary>
@@ -197,7 +208,12 @@ public class GameManager : MonoBehaviour
         state.coalInDepot = 0;
         hud.SetCoalText(0);
 
-        hud.ShowNotificationToast("Vehículo recolocado. Depósito vaciado", 2f);
+        hud.ShowNotificationToast("Vehículo recolocado. Depósito baleirado", 2f);
+    }
+
+    public void AddLeaderboardEntry(string name)
+    {
+        leaderboardManager.AddLeaderboardEntry(state.score, name);
     }
 
     /// <summary>

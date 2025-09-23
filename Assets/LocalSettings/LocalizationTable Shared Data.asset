@@ -1,0 +1,156 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: LocalizationTable Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: LocalizationTable
+  m_TableCollectionNameGuidString: 4c4ad9bb5b208174a8fc64972fcc9696
+  m_Entries:
+  - m_Id: 20964898676736
+    m_Key: playMenuButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21080640495616
+    m_Key: exitMenuButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21333682855936
+    m_Key: tutorialHeader
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21545642008576
+    m_Key: continueButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21657541844992
+    m_Key: tutorialMoveText
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22069615435776
+    m_Key: tutorialCollectText
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22355193012224
+    m_Key: tutorialDepositText
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22682076094464
+    m_Key: tutorialObstacleText
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23038390607872
+    m_Key: tutorialRespawnText
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23405568368640
+    m_Key: gameOverHeader
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23499562721280
+    m_Key: gameOverScore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23652734509056
+    m_Key: restartButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23745839669248
+    m_Key: mainMenuButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23899699322880
+    m_Key: pauseHeader
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23987901341696
+    m_Key: resumeButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24411878367232
+    m_Key: quitButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24795736875008
+    m_Key: moveTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24841643532288
+    m_Key: "breakTooltip\t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24899680116736
+    m_Key: interactTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24984321171456
+    m_Key: respawnTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25277909868544
+    m_Key: rockSpawn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25303159578624
+    m_Key: oilSpawn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25321601933312
+    m_Key: gasSpawn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26407104585728
+    m_Key: depositFullNotification
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26689859395584
+    m_Key: depositEmptyNotification
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27008236429312
+    m_Key: depositSuccessNotification
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299206780035072
+    m_Key: scoreButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 373546821263360
+    m_Key: leaderboardPosition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 373614622187520
+    m_Key: leaderboardScore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 373721195257856
+    m_Key: leaderboardName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 419272783732736
+    m_Key: inputPlaceholder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 419378002042880
+    m_Key: gameOverLeaderboardHeader
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3242017198231257304
+  references:
+    version: 2
+    RefIds:
+    - rid: 3242017198231257304
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1758548427373

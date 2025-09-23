@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 using Random = UnityEngine.Random;
 
 /// <summary>
@@ -29,7 +30,6 @@ public class ObstacleSpawner : MonoBehaviour
 
     public float spawnInterval = 10f;
     private float nextSpawn;
-
     private bool spawningEnabled = false;
 
     /// <summary>
@@ -43,7 +43,6 @@ public class ObstacleSpawner : MonoBehaviour
         obstaclePositions = new List<Vector3>();
         freeSpots = new List<Vector3>();
         validSpots = new List<Vector3>();
-
         foreach (Transform transform in internalPositions)
         {
             obstaclePositions.Add(transform.position);
@@ -139,15 +138,16 @@ public class ObstacleSpawner : MonoBehaviour
         if (activated.TryGetComponent<ToxicGas>(out ToxicGas gas))
         {
             gas.AddTimerController(timer);
-            spawnMessage = "PRECAUCIÓN: Se ha detectado una bolsa de gas tóxico";
+            
+            spawnMessage = LocalizationSettings.StringDatabase.GetLocalizedString("gasSpawn");
         }
         else if (activated.TryGetComponent<OilSpill>(out OilSpill oil))
         {
-            spawnMessage = "PRECAUCIÓN: Se ha derramado aceite resbaladizo";
+            spawnMessage = LocalizationSettings.StringDatabase.GetLocalizedString("oilSpawn");
         }
         else
         {
-            spawnMessage = "PRECAUCIÓN: Ha ocurrido un derrumbe";
+            spawnMessage = LocalizationSettings.StringDatabase.GetLocalizedString("rockSpawn");
         }
 
         OnObstacleSpawn?.Invoke(spawnMessage, 3f);

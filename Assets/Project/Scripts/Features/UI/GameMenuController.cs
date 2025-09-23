@@ -1,3 +1,6 @@
+using System;
+using System.Text.RegularExpressions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,7 +15,10 @@ public class GameMenuController : MonoBehaviour
     [SerializeField] private GameObject pauseCanvas;
     [SerializeField] private GameObject gameOverCanvas;
     [SerializeField] private GameObject hudButtonsCanvas;
+    [SerializeField] private GameObject leaderboardInputCanvas;
+    [SerializeField] private TextMeshProUGUI inputName;
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private LeaderboardManager leaderboardManager;
     //Name of the scene that contains the Main menu
     [SerializeField] private string menuSceneName = "MenuScene";
 
@@ -104,6 +110,16 @@ public class GameMenuController : MonoBehaviour
         gameOverCanvas.SetActive(false);
     }
 
+    public void ShowLeaderboardInput()
+    {
+        leaderboardInputCanvas.SetActive(true);
+    }
+
+    public void HideLeaderboardInput()
+    {
+        leaderboardInputCanvas.SetActive(false);
+    }
+
     /// <summary>
     /// Changes the UI state between pause and gameplay.
     /// </summary>
@@ -146,8 +162,11 @@ public class GameMenuController : MonoBehaviour
         HidePause();
         HideHUDButtons();
         HideHUD();
+        leaderboardManager.PopulateLeaderboard();
         ShowGameOver();
     }
+
+    
 
     /// <summary>
     /// UI callback for the Continue button on the Tutorial screen.
@@ -183,6 +202,18 @@ public class GameMenuController : MonoBehaviour
     public void OnRestartClicked()
     {
         gameManager.RestartSession();
+    }
+
+    public void OnLeaderboardInputClicked()
+    {
+        string playerName = Regex.Replace(inputName.text, @"\p{C}+", "");
+        playerName = playerName.Trim();
+        if (string.IsNullOrWhiteSpace(playerName)) playerName = "ANON";
+        gameManager.AddLeaderboardEntry(playerName);
+        leaderboardManager.ClearLeaderboardEntryTransform();
+        leaderboardManager.PopulateLeaderboard();
+        HideLeaderboardInput();
+
     }
 
     /// <summary>
