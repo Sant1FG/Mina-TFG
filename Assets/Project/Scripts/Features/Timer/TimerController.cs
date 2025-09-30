@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Handles the in-game countdown timer.
-/// Raises events on significant timer milestones like whole second change or reaching zero.
+/// Raises events on significant timer milestones like whole second change, reaching zero and low time.
 /// </summary>
 public class TimerController : MonoBehaviour
 {
@@ -20,17 +20,22 @@ public class TimerController : MonoBehaviour
     /// Invoked when countdown reaches zero.
     /// </summary>
     public event Action OnTimeUp;
+    /// <summary>
+    /// Invoked when countdown reaches 30s.
+    /// </summary>
+    public event Action OnLowTime;
 
     /// <summary>
     /// Called by Unity once per frame. Reduces the countdown once per frame using scaled time.
-    /// Invokes a time-up event just once when reaching zero and notifies each time the countdown changes a whole second.
+    /// Invokes a time-up event just once when reaching zero and low time (30s) and notifies each time 
+    /// the countdown changes a whole second.
     /// </summary>
     void Update()
     {
         if (!isRunning) return;
         //Time.delta time works independently from framerate 
         timeRemaining -= Time.deltaTime;
-
+ 
         if (timeRemaining <= 0f)
         {
             timeRemaining = 0f;
@@ -137,6 +142,7 @@ public class TimerController : MonoBehaviour
         if (currentSecond != previousSecond)
         {
             previousSecond = currentSecond;
+            if(currentSecond == 30) OnLowTime?.Invoke();
             OnTimeUpdate?.Invoke(timeRemaining);
         }
     }

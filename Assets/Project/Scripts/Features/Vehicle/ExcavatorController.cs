@@ -1,9 +1,11 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
 /// Handles the driving of the excavator using WheelColliders.
 /// Reads player input, applies motor, break, steering and updates wheel meshes.
 /// Supports temporary worse handling when triggering an "oil slip" obstacle.
+/// Handles all SFX related to the excavator.
 /// </summary>
 public class ExcavatorController : MonoBehaviour
 {
@@ -26,11 +28,21 @@ public class ExcavatorController : MonoBehaviour
     [SerializeField] private float oilSlipAngularDrag = 1.2f;
     [SerializeField] private float oilSlipSteerFactor = 0.5f;
     [SerializeField] private float oilSlipMotorFactor = 0.7f;
+    [SerializeField] private AudioSource engineAudio;
+    [SerializeField] private AudioSource brakeAudio;
+    [SerializeField] private AudioClip brakeClip;
+    [SerializeField] private float minPitch = 0.8f;
+    [SerializeField] private float maxPitch = 2.0f;
+    [SerializeField] private float brakeSoundCooldown = 1f; 
+    private float lastBrakeSoundTime = -1f;
     private float originalAngularDrag;
     private float originalMaxSteerAngle;
     private bool valuesSaved;
     private bool controlsEnabled = false;
+    private bool brakingSoundActive = false;
     private float steerAngle;
+
+
 
     /// <summary>
     /// Called by Unity when the script instance is being loaded.
@@ -44,6 +56,7 @@ public class ExcavatorController : MonoBehaviour
     /// <summary>
     /// Called by Unity before the first execution of Update.
     /// Applies the center of mass vertical offset to improve stability.
+    /// Configures the engine audio of the excavator.
     /// </summary>
     private void Start()
     {
@@ -53,11 +66,18 @@ public class ExcavatorController : MonoBehaviour
             com.y += centerOfMassYOffset;
             playerRB.centerOfMass = com;
         }
+
+         if (engineAudio != null)
+        {
+            engineAudio.loop = true;
+            engineAudio.playOnAwake = false;
+            
+        }
     }
 
     /// <summary>
     /// Called by Unity once per Physics update.Handles the oil slip timers and values,reads player input, 
-    /// applies motor, break, steering and updates wheel meshes to sync with Wheel Colliders. 
+    /// applies motor, break, steering, updates wheel meshes to sync with Wheel Colliders and motor audio. 
     /// Does not work if controls are not enabled.
     /// </summary>
     private void FixedUpdate()
@@ -77,6 +97,7 @@ public class ExcavatorController : MonoBehaviour
         ApplyMotor();
         ApplySteering();
         UpdateWheelPosition();
+        UpdateEngineAudio();
 
 
     }
@@ -94,7 +115,7 @@ public class ExcavatorController : MonoBehaviour
     /// <summary>
     /// Calculates the motor and break torque based on player input, direction of travel, coasting
     /// speed limit, reverse braking and the handling modifiers applied by an "oil slip" obstacle.
-    /// Applies those values to the wheels. 
+    /// Applies those values to the wheels. Handles break SFX.
     /// </summary>
     private void ApplyMotor()
     {
@@ -113,11 +134,12 @@ public class ExcavatorController : MonoBehaviour
         if (oilSlipActive) torque *= oilSlipMotorFactor;
 
         float brakeTorque = 0f;
-
-        if (brakingByKey || brakingByReverse)
+        bool isBraking = brakingByKey || brakingByReverse;
+        if (isBraking)
         {
             torque = 0f;
             brakeTorque = fullBrakeTorque;
+            
         }
         else if (coastingBrake)
         {
@@ -130,7 +152,7 @@ public class ExcavatorController : MonoBehaviour
             torque = 0f;
             brakeTorque = Mathf.Max(brakeTorque, limiterCoastBrake);
         }
-
+    
         colliders.FLWheel.motorTorque = torque;
         colliders.FRWheel.motorTorque = torque;
         colliders.RLWheel.motorTorque = torque;
@@ -138,6 +160,7 @@ public class ExcavatorController : MonoBehaviour
 
         // Break distribution 65 Front, 35 Rear.
         float fFront = 0.65f, fRear = 0.35f;
+        PlayBrakeSound(speedKPH,isBraking);
         colliders.FLWheel.brakeTorque = brakeTorque * fFront;
         colliders.FRWheel.brakeTorque = brakeTorque * fFront;
         colliders.RLWheel.brakeTorque = brakeTorque * fRear;
@@ -180,6 +203,24 @@ public class ExcavatorController : MonoBehaviour
     }
 
     /// <summary>
+    /// Updates motor engine sound pitch depending on the current speed.
+    /// </summary>
+    private void UpdateEngineAudio()
+    {
+        if (engineAudio == null) return;
+
+        Vector3 v = playerRB.linearVelocity;
+        float speed = new Vector3(v.x, 0f, v.z).magnitude;
+        float speedKPH = speed * 3.6f;
+
+        // Factor combining throttle and speed
+        float intensity = Mathf.Abs(mainPedalInput) * 0.7f + speedKPH / maxSpeedKPH * 0.3f;
+        float targetPitch = Mathf.Lerp(minPitch, maxPitch, intensity);
+
+        engineAudio.pitch = Mathf.Lerp(engineAudio.pitch, targetPitch, Time.deltaTime * 5f);
+    }
+
+    /// <summary>
     /// Triggers a temporary "oil slip" effect for a given duration.
     /// Increases angular damping and reduces maximum steering angle and motor effectiveness.
     /// Original values are restored when the effect ends.
@@ -207,28 +248,42 @@ public class ExcavatorController : MonoBehaviour
     /// </summary>
     /// <param name="position">Target world position.</param>
     /// <param name="rotation">Target world rotation.</param>
-    public void Reposition(Vector3 position, Quaternion rotation)
+    public void HandleReposition(Vector3 position, Quaternion rotation)
     {
-        const float freezeBrake = 30000f;
-        colliders.FLWheel.motorTorque = 0f;
-        colliders.FRWheel.motorTorque = 0f;
-        colliders.RLWheel.motorTorque = 0f;
-        colliders.RRWheel.motorTorque = 0f;
+       StartCoroutine(Reposition(position, rotation));
+    }
 
-        colliders.FLWheel.brakeTorque = freezeBrake;
-        colliders.FRWheel.brakeTorque = freezeBrake;
-        colliders.RLWheel.brakeTorque = freezeBrake;
-        colliders.RRWheel.brakeTorque = freezeBrake;
-
-        colliders.FLWheel.steerAngle = 0f;
-        colliders.FRWheel.steerAngle = 0f;
+    /// <summary>
+    /// Corroutine that removes all forces affecting the vehicle and its collider and safely repositions 
+    /// it to provided position and rotation after waiting a physics step.
+    /// </summary>
+    /// <param name="position">Target world position.</param>
+    /// <param name="rotation">Target world rotation.</param>
+    public IEnumerator Reposition(Vector3 position, Quaternion rotation)
+    {
+        colliders.FLWheel.enabled = false;
+        colliders.FRWheel.enabled = false;
+        colliders.RLWheel.enabled = false;
+        colliders.RRWheel.enabled = false;
 
         playerRB.linearVelocity = Vector3.zero;
         playerRB.angularVelocity = Vector3.zero;
+        playerRB.Sleep();
+
+        position += Vector3.up * 0.5f;
 
         playerRB.position = position;
         playerRB.rotation = rotation;
 
+        // Wait for a physics step
+        yield return new WaitForFixedUpdate();
+
+        playerRB.WakeUp();
+
+        colliders.FLWheel.enabled = true;
+        colliders.FRWheel.enabled = true;
+        colliders.RLWheel.enabled = true;
+        colliders.RRWheel.enabled = true;
     }
 
     /// <summary>
@@ -245,6 +300,51 @@ public class ExcavatorController : MonoBehaviour
     public void DisableControls()
     {
         controlsEnabled = false;
+    }
+
+    /// <summary>
+    /// Plays the brake SFX, sound pitch depending on speed, preventing sound looping and clipping.
+    /// </summary>
+    /// <param name="speedKPH">Vehicle speed.</param>
+    /// <param name="isBraking">True if the vehicle is currently braking, false otherwise.</param>
+    private void PlayBrakeSound(float speedKPH, bool isBraking)
+    {
+        if (brakeAudio == null || brakeClip == null) return;
+
+        if (isBraking)
+        {
+            if (!brakingSoundActive && speedKPH > 5f && Time.time - lastBrakeSoundTime >= brakeSoundCooldown)
+            {
+                brakeAudio.pitch = Mathf.Lerp(0.9f, 1.2f, speedKPH / maxSpeedKPH);
+                brakeAudio.volume = 0.07f;
+                brakeAudio.clip = brakeClip;
+                brakeAudio.Play();
+                brakingSoundActive = true;
+                lastBrakeSoundTime = Time.time;
+            }
+        }
+        else
+        {
+            // Resets on releasing break button
+            brakingSoundActive = false;
+        }
+
+    }
+
+    /// <summary>
+    /// Enables excavator engine sound.
+    /// </summary>
+    public void EnableEngineSound()
+    {
+        engineAudio.Play();
+    }
+
+    /// <summary>
+    /// Disables excavator engine sound.
+    /// </summary>
+    public void DisableEngineSound()
+    {
+        engineAudio.Stop();
     }
 }
 

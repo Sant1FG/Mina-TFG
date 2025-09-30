@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 /// <summary>
 /// Handles player interactions with elements of the scenario (coal veins and obstacles).
@@ -27,11 +28,11 @@ public class InteractionController : MonoBehaviour
     /// <summary>
     /// Invoked to signal that a coal unit has been successfully collected
     /// </summary>
-    public event Action OnCollectCoal;
+    public event Action<bool> OnCollectCoal;
     /// <summary>
     /// Invoked to signal that a deposit action has been performed at the nexus.
     /// </summary>
-    public event Action OnDepositCoal;
+    public event Action<bool> OnDepositCoal;
     private HashSet<CoalVein> veinsInRange;
     private bool interactionVisible;
 
@@ -191,13 +192,14 @@ public class InteractionController : MonoBehaviour
         if (state.coalInDepot >= config.depositMax)
         {
             Debug.Log("InteractionController: Deposit is full");
-            OnNotificationToast?.Invoke("Depósito lleno. Entrega el carbón en la central", 3f);
+            OnNotificationToast?.Invoke(LocalizationSettings.StringDatabase.GetLocalizedString("depositFullNotification"), 3f);
+            OnCollectCoal?.Invoke(false);
             return false;
 
         }
         else
         {
-            OnCollectCoal?.Invoke();
+            OnCollectCoal?.Invoke(true);
         }
 
 
@@ -228,13 +230,14 @@ public class InteractionController : MonoBehaviour
         if (state.coalInDepot <= 0)
         {
             Debug.Log("Deposito vacio");
-            OnNotificationToast?.Invoke("Depósito vacío. Recoge carbón en la mina", 3f);
+            OnDepositCoal?.Invoke(false);
+            OnNotificationToast?.Invoke(LocalizationSettings.StringDatabase.GetLocalizedString("depositEmptyNotification"), 3f);
             return false;
 
         }
-        OnDepositCoal?.Invoke();
+        OnDepositCoal?.Invoke(true);
         Debug.Log("Deposito con exito");
-        OnNotificationToast?.Invoke("Carbón depositado! Añadiendo tiempo limite", 3f);
+        OnNotificationToast?.Invoke(LocalizationSettings.StringDatabase.GetLocalizedString("depositSuccessNotification"), 3f);
         return true;
     }
 

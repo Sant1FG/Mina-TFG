@@ -22,7 +22,7 @@ public class HUDController : MonoBehaviour
     [SerializeField] private InteractionController interaction;
 
     private Coroutine notificationCoroutine;
-    
+
     /// <summary>
     /// Called by Unity when the script instance is being loaded.
     /// Initializes HUD visibility, hiding optionals panels at the start.
@@ -196,5 +196,22 @@ public class HUDController : MonoBehaviour
         interactionText.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Event handler for Toxic gas.
+    /// </summary>
+    public void FlashTimerUI()
+    {
+        StartCoroutine(FlashTimer());
+    }
 
+    /// <summary>
+    /// Turns the timer red for 3 seconds.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator FlashTimer()
+    {
+        timerText.color = Color.red;
+        yield return new WaitForSeconds(3);
+        timerText.color = Color.white;
+    }
 }

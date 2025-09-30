@@ -1,0 +1,171 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: LocalizationTable_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 4c4ad9bb5b208174a8fc64972fcc9696, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 20964898676736
+    m_Localized: PLAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21080640495616
+    m_Localized: EXIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21333682855936
+    m_Localized: HOW TO PLAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21545642008576
+    m_Localized: CONTINUE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21657541844992
+    m_Localized: 'Move the excavator with [WASD]'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22069615435776
+    m_Localized: 'Collect coal veins with [E]'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22355193012224
+    m_Localized: Deliver the cargo to the thermal power plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22682076094464
+    m_Localized: Avoid obstacles! Gas, Oil, and Rocks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23038390607872
+    m_Localized: 'Press [T] if you get stuck. Brake by holding [Space]'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23405568368640
+    m_Localized: GAME OVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23499562721280
+    m_Localized: Score
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23652734509056
+    m_Localized: RESTART
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23745839669248
+    m_Localized: MAIN MENU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23899699322880
+    m_Localized: PAUSE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23987901341696
+    m_Localized: RESUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24411878367232
+    m_Localized: QUIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24795736875008
+    m_Localized: Move
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24841643532288
+    m_Localized: Break
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24899680116736
+    m_Localized: Interact
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24984321171456
+    m_Localized: Respawn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25321601933312
+    m_Localized: 'CAUTION: A pocket of toxic gas has been detected.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25277909868544
+    m_Localized: 'CAUTION: A landslide has occurred'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25303159578624
+    m_Localized: 'CAUTION: Slippery oil has been spilled.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26407104585728
+    m_Localized: Tank full. Deliver the coal to the thermal power plant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26689859395584
+    m_Localized: Empty deposit. Collect coal in the mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27008236429312
+    m_Localized: Coal deposited! Increasing time limit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299206780035072
+    m_Localized: HIGHSCORES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 373546821263360
+    m_Localized: POS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 373614622187520
+    m_Localized: SCORE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 373721195257856
+    m_Localized: NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 419272783732736
+    m_Localized: Name...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 419378002042880
+    m_Localized: Leaderboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1198817078059008
+    m_Localized: Relocated. Deposit halved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1398459292098560
+    m_Localized: New Record!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1399867911348224
+    m_Localized: Record your highscore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1754777089646592
+    m_Localized: Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1754810111401984
+    m_Localized: Effects
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

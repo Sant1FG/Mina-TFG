@@ -228,7 +228,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3891308243879514273}
   - component: {fileID: 5469886231832052335}
-  - component: {fileID: 2392692867177396259}
   - component: {fileID: 6366065298403875574}
   m_Layer: 0
   m_Name: Excavator
@@ -281,27 +280,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!65 &2392692867177396259
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1205010577734675490}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.934021, y: 1.6041832, z: 5.017151}
-  m_Center: {x: 0.0289917, y: 1.2827206, z: -0.109954834}
 --- !u!114 &6366065298403875574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,8 +307,19 @@ MonoBehaviour:
   enginePower: 1100
   maxSteerAngle: 30
   centerOfMassYOffset: -0.55
-  lowSpeedThreshold: 6
-  lowSpeedBoost: 2
+  fullBrakeTorque: 20000
+  coastBrakeTorque: 1200
+  limiterCoastBrake: 1200
+  maxSpeedKPH: 40
+  oilSlipAngularDrag: 1.2
+  oilSlipSteerFactor: 0.5
+  oilSlipMotorFactor: 0.7
+  engineAudio: {fileID: 0}
+  brakeAudio: {fileID: 0}
+  brakeClip: {fileID: 0}
+  minPitch: 0.8
+  maxPitch: 2
+  brakeSoundCooldown: 1
 --- !u!1 &2104349985594415939
 GameObject:
   m_ObjectHideFlags: 0

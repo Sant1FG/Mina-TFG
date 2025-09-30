@@ -6,10 +6,12 @@ using UnityEngine;
 public class OilSpill : MonoBehaviour
 {
     [SerializeField] private float duration = 2.0f;
+    private AudioManager audioManager;
 
     /// <summary>
     /// Called by Unity when another collider enters this trigger.
-    /// If the collider belongs to a player, it starts an slip effect on the excavator.
+    /// If the collider belongs to a player, it starts an slip effect on the excavator and triggers
+    /// the Oil Slip SFX.
     /// </summary>
     /// <param name="other">Data from the collider that entered the trigger</param>
     private void OnTriggerEnter(Collider other)
@@ -20,5 +22,16 @@ public class OilSpill : MonoBehaviour
         //Slip logic handled in excavatorController.
         var excavator = other.GetComponentInChildren<ExcavatorController>();
         excavator.TriggerOilSlip(duration);
+        audioManager.PlayOilTriggerSFX();
+    }
+
+    /// <summary>
+    /// Injects the AudioManager to operate on.
+    /// Injected by the spawner during instatiation.
+    /// </summary>
+    /// <param name="t">Injected audio manager</param>
+    public void AddAudioManager(AudioManager a)
+    {
+        audioManager = a;
     }
 }
