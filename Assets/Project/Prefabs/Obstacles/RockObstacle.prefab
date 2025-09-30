@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 3913053705163429224}
   - component: {fileID: 6795583146426840213}
   - component: {fileID: 2729145709327269846}
+  - component: {fileID: 6927090354684491430}
+  - component: {fileID: -214321785189954259}
   m_Layer: 0
   m_Name: RockObstacle
   m_TagString: Untagged
@@ -112,3 +114,37 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 6967311506606235440, guid: ad13489d19e6b77459e749ba5e8ee637, type: 3}
+--- !u!64 &6927090354684491430
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7342820352051186937}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 6967311506606235440, guid: ad13489d19e6b77459e749ba5e8ee637, type: 3}
+--- !u!114 &-214321785189954259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7342820352051186937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70577f3894b0bc34598b77b8ad956e4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'

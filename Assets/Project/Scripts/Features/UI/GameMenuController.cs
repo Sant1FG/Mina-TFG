@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -19,15 +18,18 @@ public class GameMenuController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI inputName;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private LeaderboardManager leaderboardManager;
+    [SerializeField] private AudioManager audioManager;
     //Name of the scene that contains the Main menu
     [SerializeField] private string menuSceneName = "MenuScene";
 
     /// <summary>
-    /// Initializes the UI. Shows Tutorial screen by default.
+    /// Initializes the UI. Shows Tutorial screen by default and starts background music.
     /// </summary>
     void Start()
     {
         ShowTutorial();
+        audioManager.SwitchRegularMusic();
+        audioManager.PlayBackgroundMusic();
     }
 
     /// <summary>
@@ -110,11 +112,17 @@ public class GameMenuController : MonoBehaviour
         gameOverCanvas.SetActive(false);
     }
 
+    /// <summary>
+    /// Shows the register new highscore input field in the GameOver screen.
+    /// </summary>
     public void ShowLeaderboardInput()
     {
         leaderboardInputCanvas.SetActive(true);
     }
 
+    /// <summary>
+    /// Hides the register new highscore input field in the GameOver screen.
+    /// </summary>
     public void HideLeaderboardInput()
     {
         leaderboardInputCanvas.SetActive(false);
@@ -166,7 +174,7 @@ public class GameMenuController : MonoBehaviour
         ShowGameOver();
     }
 
-    
+
 
     /// <summary>
     /// UI callback for the Continue button on the Tutorial screen.
@@ -174,15 +182,17 @@ public class GameMenuController : MonoBehaviour
     /// </summary>
     public void OnCloseTutorial()
     {
+        audioManager.PlayButtonSFX();
         gameManager.StartSession();
     }
-    
+
     /// <summary>
     /// UI callback for the Pause button on the HUDButtons panel.
     /// Pauses the current session.
     /// </summary>
     public void OnPauseClicked()
     {
+        audioManager.PlayButtonSFX();
         gameManager.PauseSession();
     }
 
@@ -192,6 +202,7 @@ public class GameMenuController : MonoBehaviour
     /// </summary>
     public void OnResumeClicked()
     {
+        audioManager.PlayButtonSFX();
         gameManager.ResumeSession();
     }
 
@@ -201,14 +212,23 @@ public class GameMenuController : MonoBehaviour
     /// </summary>
     public void OnRestartClicked()
     {
+        audioManager.PlayButtonSFX();
         gameManager.RestartSession();
     }
 
+    /// <summary>
+    /// UI callback for the leaderboard input button on the Game Over screen.
+    /// Plays a SFX, adds a new entry and refreshes the leaderboard panel then
+    /// hides the leaderboard input. 
+    /// </summary>
     public void OnLeaderboardInputClicked()
     {
+        audioManager.PlayButtonSFX();
+        audioManager.PlayRegisterRecordSFX();
         string playerName = Regex.Replace(inputName.text, @"\p{C}+", "");
         playerName = playerName.Trim();
-        if (string.IsNullOrWhiteSpace(playerName)) playerName = "ANON";
+        //Default name if empty
+        if (string.IsNullOrWhiteSpace(playerName)) playerName = "???";
         gameManager.AddLeaderboardEntry(playerName);
         leaderboardManager.ClearLeaderboardEntryTransform();
         leaderboardManager.PopulateLeaderboard();
@@ -222,6 +242,16 @@ public class GameMenuController : MonoBehaviour
     /// </summary>
     public void OnMainMenuClicked()
     {
+        audioManager.PlayButtonSFX();
         SceneManager.LoadScene(menuSceneName, LoadSceneMode.Single);
+    }
+    
+    /// <summary>
+    /// Sent by Unity to all GameObject on application quit.
+    /// Changes locale to default (galician)
+    /// </summary>
+     public void OnApplicationQuit()
+    {
+        PlayerPrefs.SetInt("LocaleKey", 0);
     }
 }

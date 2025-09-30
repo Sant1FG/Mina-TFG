@@ -28,11 +28,11 @@ public class InteractionController : MonoBehaviour
     /// <summary>
     /// Invoked to signal that a coal unit has been successfully collected
     /// </summary>
-    public event Action OnCollectCoal;
+    public event Action<bool> OnCollectCoal;
     /// <summary>
     /// Invoked to signal that a deposit action has been performed at the nexus.
     /// </summary>
-    public event Action OnDepositCoal;
+    public event Action<bool> OnDepositCoal;
     private HashSet<CoalVein> veinsInRange;
     private bool interactionVisible;
 
@@ -193,12 +193,13 @@ public class InteractionController : MonoBehaviour
         {
             Debug.Log("InteractionController: Deposit is full");
             OnNotificationToast?.Invoke(LocalizationSettings.StringDatabase.GetLocalizedString("depositFullNotification"), 3f);
+            OnCollectCoal?.Invoke(false);
             return false;
 
         }
         else
         {
-            OnCollectCoal?.Invoke();
+            OnCollectCoal?.Invoke(true);
         }
 
 
@@ -229,11 +230,12 @@ public class InteractionController : MonoBehaviour
         if (state.coalInDepot <= 0)
         {
             Debug.Log("Deposito vacio");
+            OnDepositCoal?.Invoke(false);
             OnNotificationToast?.Invoke(LocalizationSettings.StringDatabase.GetLocalizedString("depositEmptyNotification"), 3f);
             return false;
 
         }
-        OnDepositCoal?.Invoke();
+        OnDepositCoal?.Invoke(true);
         Debug.Log("Deposito con exito");
         OnNotificationToast?.Invoke(LocalizationSettings.StringDatabase.GetLocalizedString("depositSuccessNotification"), 3f);
         return true;

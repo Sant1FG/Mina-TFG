@@ -15,6 +15,8 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] Transform internalPositions;
     [SerializeField] Transform player;
     [SerializeField] TimerController timer;
+    [SerializeField] AudioManager audioManager;
+    [SerializeField] HUDController hudController;
     [SerializeField] private List<GameObject> obstaclePrefabs;
     //How far can an obstacle spawn from the player's current position
     [SerializeField] private float playerSpawnDist = 15f;
@@ -22,6 +24,7 @@ public class ObstacleSpawner : MonoBehaviour
     /// Invoked to signal that an obstacle has spawned. Sending a notification toast.
     /// </summary>
     public event Action<string, float> OnObstacleSpawn;
+    public event Action<int> OnObstacleSFX;
     private Dictionary<Vector3, GameObject> obstacleDictionary;
     private HashSet<Vector3> activatedPositions;
     private List<Vector3> obstaclePositions;
@@ -128,29 +131,44 @@ public class ObstacleSpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// Sends the spawn notification depending on the type of activated obstacle.
+    /// Sends the spawn notification and SFX event depending on the type of activated obstacle.
+    /// Injects controllers needed for each obstacle.
     /// </summary>
     /// <param name="activated">Obstacle chosen for activation</param>
     private void ActivateObstacleNotification(GameObject activated)
     {
         String spawnMessage = "";
+        int activatedObstacleID;
         //GasObstacles necesitan timeController
         if (activated.TryGetComponent<ToxicGas>(out ToxicGas gas))
         {
             gas.AddTimerController(timer);
-            
+            gas.AddAudioManager(audioManager);
+            gas.AddHUDController(hudController);
+
             spawnMessage = LocalizationSettings.StringDatabase.GetLocalizedString("gasSpawn");
+            activatedObstacleID = 0;
         }
         else if (activated.TryGetComponent<OilSpill>(out OilSpill oil))
         {
             spawnMessage = LocalizationSettings.StringDatabase.GetLocalizedString("oilSpawn");
+            activatedObstacleID = 1;
+            oil.AddAudioManager(audioManager);
+        }
+        else if (activated.TryGetComponent<Rock>(out Rock rock))
+        {
+            spawnMessage = LocalizationSettings.StringDatabase.GetLocalizedString("rockSpawn");
+            activatedObstacleID = 2;
+            rock.AddAudioManager(audioManager);
+
         }
         else
         {
-            spawnMessage = LocalizationSettings.StringDatabase.GetLocalizedString("rockSpawn");
+            activatedObstacleID = 2;
         }
 
         OnObstacleSpawn?.Invoke(spawnMessage, 3f);
+        OnObstacleSFX?.Invoke(activatedObstacleID);
     }
 
     /// <summary>

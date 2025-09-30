@@ -47,7 +47,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 22682076094464
-    m_Localized: "\xA1Evita los obstaculos! Gas, Aceite y Rocas"
+    m_Localized: "\xA1Evita los obst\xE1culos! Gas, Aceite y Rocas"
     m_Metadata:
       m_Items: []
   - m_Id: 23038390607872
@@ -107,7 +107,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 25321601933312
-    m_Localized: "PRECAUCI\xD3N: Se ha detectado una bolsa de gas t\xF3xico"
+    m_Localized: "PRECAUCI\xD3N: Se ha detectado una fuga de gas t\xF3xico"
     m_Metadata:
       m_Items: []
   - m_Id: 26407104585728
@@ -144,6 +144,26 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 419378002042880
     m_Localized: "Mellores Puntuaci\xF3ns"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1198817078059008
+    m_Localized: "Recolocado. Dep\xF3sito reducido a la mitad"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1398459292098560
+    m_Localized: "\xA1Nuevo Record!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1399867911348224
+    m_Localized: "Registra tu puntuaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1754777089646592
+    m_Localized: "M\xFAsica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1754810111401984
+    m_Localized: Efectos
     m_Metadata:
       m_Items: []
   references:

@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
+/// <summary>
+/// Handles all operations relating to the game leaderboard:
+/// - Populating the leaderboard.
+/// - Adding new entries.
+/// - Sorting the leaderboard.
+/// </summary>
 public class LeaderboardManager : MonoBehaviour
 {
     [SerializeField] private Transform entryContainer;
@@ -22,11 +27,14 @@ public class LeaderboardManager : MonoBehaviour
         {
             leaderboard = new Leaderboard();
             leaderboard.leaderboardList = new List<LeaderboardEntry>();
-            LeaderboardEntry leaderboardEntry = new LeaderboardEntry() { score = 0, name = "ANON" };
-            for (int i = 0; i < 10; i++)
+            LeaderboardEntry devEntry = new LeaderboardEntry() { score = 850, name = "DEV" };
+            LeaderboardEntry leaderboardEntry = new LeaderboardEntry() { score = 0, name = "___" };
+            leaderboard.leaderboardList.Add(devEntry);
+            for (int i = 0; i < 9; i++)
             {
                 leaderboard.leaderboardList.Add(leaderboardEntry);
             }
+            leaderboard.leaderboardList = SortList(leaderboard.leaderboardList);
             string json = JsonUtility.ToJson(leaderboard);
             PlayerPrefs.SetString("leaderboards", json);
             PlayerPrefs.Save();
@@ -86,7 +94,7 @@ public class LeaderboardManager : MonoBehaviour
 
         transformList.Add(entryTransform);
     }
-    
+
     public void ClearLeaderboardEntryTransform()
     {
         foreach (Transform item in entryContainer)

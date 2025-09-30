@@ -146,6 +146,26 @@ MonoBehaviour:
     m_Localized: Leaderboard
     m_Metadata:
       m_Items: []
+  - m_Id: 1198817078059008
+    m_Localized: Relocated. Deposit halved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1398459292098560
+    m_Localized: New Record!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1399867911348224
+    m_Localized: Record your highscore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1754777089646592
+    m_Localized: Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1754810111401984
+    m_Localized: Effects
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

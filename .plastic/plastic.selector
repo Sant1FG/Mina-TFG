@@ -1,4 +1,0 @@
-repository "Mina-TFG/Mina-TFG@6872561825173@cloud"
-  path "/"
-    br "/main"
-    co "/main"
