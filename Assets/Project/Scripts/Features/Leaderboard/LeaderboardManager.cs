@@ -27,10 +27,10 @@ public class LeaderboardManager : MonoBehaviour
         {
             leaderboard = new Leaderboard();
             leaderboard.leaderboardList = new List<LeaderboardEntry>();
-            LeaderboardEntry devEntry = new LeaderboardEntry() { score = 850, name = "DEV" };
+            //LeaderboardEntry devEntry = new LeaderboardEntry() { score = 850, name = "DEV" };
             LeaderboardEntry leaderboardEntry = new LeaderboardEntry() { score = 0, name = "___" };
-            leaderboard.leaderboardList.Add(devEntry);
-            for (int i = 0; i < 9; i++)
+            //leaderboard.leaderboardList.Add(devEntry);
+            for (int i = 0; i < 10; i++)
             {
                 leaderboard.leaderboardList.Add(leaderboardEntry);
             }

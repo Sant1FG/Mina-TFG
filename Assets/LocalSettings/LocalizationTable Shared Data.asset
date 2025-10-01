@@ -163,6 +163,10 @@ MonoBehaviour:
     m_Key: sfxSlider
     m_Metadata:
       m_Items: []
+  - m_Id: 3204644915814400
+    m_Key: gameTitle
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

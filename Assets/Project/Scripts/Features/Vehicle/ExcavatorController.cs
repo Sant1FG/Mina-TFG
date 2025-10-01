@@ -93,7 +93,7 @@ public class ExcavatorController : MonoBehaviour
             maxSteerAngle = originalMaxSteerAngle;
         }
 
-        GetInput();
+        //GetInput();
         ApplyMotor();
         ApplySteering();
         UpdateWheelPosition();
@@ -105,11 +105,31 @@ public class ExcavatorController : MonoBehaviour
     /// <summary>
     /// Reads player input from space key and the horizontal and vertical axis (WASD). 
     /// </summary>
-    private void GetInput()
+    /*  private void GetInput()
+     {
+         mainPedalInput = Input.GetAxis("Vertical");
+         steeringInput = Input.GetAxis("Horizontal");
+         breakInput = Input.GetKey(KeyCode.Space);
+     } */
+
+    public void MainPedalInput(float input)
     {
-        mainPedalInput = Input.GetAxis("Vertical");
-        steeringInput = Input.GetAxis("Horizontal");
-        breakInput = Input.GetKey(KeyCode.Space);
+        mainPedalInput = input;
+    }
+
+       public void SteeringInput(float input)
+    {
+        steeringInput = input;
+    }
+
+    public void BreakPress()
+    {
+        breakInput = true;
+    }
+
+    public void BreakRelease()
+    {
+        breakInput = false;
     }
 
     /// <summary>
@@ -139,7 +159,7 @@ public class ExcavatorController : MonoBehaviour
         {
             torque = 0f;
             brakeTorque = fullBrakeTorque;
-            
+
         }
         else if (coastingBrake)
         {
@@ -152,7 +172,7 @@ public class ExcavatorController : MonoBehaviour
             torque = 0f;
             brakeTorque = Mathf.Max(brakeTorque, limiterCoastBrake);
         }
-    
+
         colliders.FLWheel.motorTorque = torque;
         colliders.FRWheel.motorTorque = torque;
         colliders.RLWheel.motorTorque = torque;
@@ -160,7 +180,7 @@ public class ExcavatorController : MonoBehaviour
 
         // Break distribution 65 Front, 35 Rear.
         float fFront = 0.65f, fRear = 0.35f;
-        PlayBrakeSound(speedKPH,isBraking);
+        PlayBrakeSound(speedKPH, isBraking);
         colliders.FLWheel.brakeTorque = brakeTorque * fFront;
         colliders.FRWheel.brakeTorque = brakeTorque * fFront;
         colliders.RLWheel.brakeTorque = brakeTorque * fRear;

@@ -35,11 +35,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 21657541844992
-    m_Localized: 'Move the excavator with [WASD]'
+    m_Localized: "Move the excavator with [\u2191\u2193\u2190\u2192]"
     m_Metadata:
       m_Items: []
   - m_Id: 22069615435776
-    m_Localized: 'Collect coal veins with [E]'
+    m_Localized: Cross the veins to collect them
     m_Metadata:
       m_Items: []
   - m_Id: 22355193012224
@@ -51,7 +51,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 23038390607872
-    m_Localized: 'Press [T] if you get stuck. Brake by holding [Space]'
+    m_Localized: 'Press [Respawn] if you get stuck. Brake holding [Pedal]'
     m_Metadata:
       m_Items: []
   - m_Id: 23405568368640
@@ -164,6 +164,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1754810111401984
     m_Localized: Effects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3204644915814400
+    m_Localized: A Mina
     m_Metadata:
       m_Items: []
   references:

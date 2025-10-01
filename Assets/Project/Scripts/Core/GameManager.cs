@@ -19,9 +19,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private CameraController cameraController;
     [SerializeField] private AudioManager audioManager;
     [SerializeField] private LeaderboardManager leaderboardManager;
-    [SerializeField] private KeyCode respawnKey = KeyCode.T;
-    [SerializeField] private KeyCode escapeKey = KeyCode.Escape;
-    [SerializeField] private KeyCode hornKey = KeyCode.H;
+    //[SerializeField] private KeyCode respawnKey = KeyCode.T;
+    //[SerializeField] private KeyCode escapeKey = KeyCode.Escape;
+   // [SerializeField] private KeyCode hornKey = KeyCode.H;
     [SerializeField] private Transform playerSpawn;
     [SerializeField] private Transform cameraRespawnTransform;
 
@@ -94,16 +94,16 @@ public class GameManager : MonoBehaviour
     /// Poll the horn key to play the horn sound effect.
     /// Polls the ESC key to display the pause menu.
     /// </summary>
-    private void Update()
+/*     private void Update()
     {
-        if (state.isRunning && Input.GetKeyDown(respawnKey))
+         if (state.isRunning && Input.GetKeyDown(respawnKey))
         {
             if (excavator != null)
             {
                 audioManager.PlayRespawnSFX();
                 RespawnPlayer();
             }
-        }
+        } 
 
         if (state.isRunning && Input.GetKeyDown(hornKey))
         {
@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviour
             }
             audioManager.PlayButtonSFX();
         }
-    }
+    } */
 
     /// <summary>
     /// Starts a gameplay session: 
@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
             // Initialize according to config
             score = 0,
             coalInDepot = 0,
-            isRunning = true
+            isRunning = false
         };
 
         //Camera follows player
@@ -170,6 +170,7 @@ public class GameManager : MonoBehaviour
         //Show Gameplay UI and start countdown
         gameMenu.ShowGameplayUI();
         audioManager.PlayVehicleStartSFX();
+        state.isRunning = true;
         timer.StartTimer(config.initialTimeSeconds);
 
     }
@@ -266,7 +267,7 @@ public class GameManager : MonoBehaviour
     /// Repositions the player and camera to the spawn points.
     /// Halves the vehicle deposit, updates the UI and shows the respawn notification.
     /// </summary>
-    private void RespawnPlayer()
+    public void RespawnPlayer()
     {
         Debug.Log("GameManager: Respawning player");
         excavator.HandleReposition(playerSpawn.position, playerSpawn.rotation);
@@ -321,7 +322,7 @@ public class GameManager : MonoBehaviour
             hud.SetCoalText(state.coalInDepot);
             hud.SetScoreText(state.score);
         }
-        else
+        else if(state.isRunning)
         {
             audioManager.PlayDepositFailSFX();
         }

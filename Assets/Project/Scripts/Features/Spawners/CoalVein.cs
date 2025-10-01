@@ -18,8 +18,8 @@ public class CoalVein : MonoBehaviour
         Debug.Log("Vehicle entered vein range");
 
         var interaction = other.GetComponentInChildren<InteractionController>();
-        if (interaction != null)
-            interaction.NotifyVeinEntered(this);
+        if (interaction != null) interaction.TryCollect(this);
+            //interaction.NotifyVeinEntered(this);
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public class CoalVein : MonoBehaviour
     /// If the collider belongs to a player, forwards an exit notification to its controller.
     /// </summary>
     /// <param name="other">Data from the collider that exited the trigger</param>
-    private void OnTriggerExit(Collider other)
+/*     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
 
@@ -36,5 +36,5 @@ public class CoalVein : MonoBehaviour
         var interaction = other.GetComponentInChildren<InteractionController>();
         if (interaction != null)
             interaction.NotifyVeinExited(this);
-    }
+    } */
 }

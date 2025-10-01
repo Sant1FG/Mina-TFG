@@ -35,11 +35,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 21657541844992
-    m_Localized: 'Mueve la excavadora con [WASD]'
+    m_Localized: "Mueve la excavadora con [\u2191\u2193\u2190\u2192]"
     m_Metadata:
       m_Items: []
   - m_Id: 22069615435776
-    m_Localized: "Recoge vetas de carb\xF3n con [E]"
+    m_Localized: Atraviesa las vetas para recogerlas
     m_Metadata:
       m_Items: []
   - m_Id: 22355193012224
@@ -51,7 +51,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 23038390607872
-    m_Localized: 'Pulsa [T] si te atascas. Frena manteniendo [Espacio]'
+    m_Localized: 'Pulsa [Reaparecer] si te atascas. Frena con [Pedal]'
     m_Metadata:
       m_Items: []
   - m_Id: 23405568368640
@@ -164,6 +164,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1754810111401984
     m_Localized: Efectos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3204644915814400
+    m_Localized: A Mina
     m_Metadata:
       m_Items: []
   references:

@@ -12,7 +12,7 @@ public class InteractionController : MonoBehaviour
     //Reference to the player position
     [SerializeField] private Transform player;
     [SerializeField] private VeinSpawner spawner;
-    [SerializeField] private KeyCode collectKey = KeyCode.E;
+    //[SerializeField] private KeyCode collectKey = KeyCode.E;
     private CoalVein closestVeinInRange;
     private Nexus nexusInRange;
     private SessionState state;
@@ -68,7 +68,7 @@ public class InteractionController : MonoBehaviour
     /// Called by Unity once per frame. Polls the collect key while the game is running.
     /// Deposits at the nexus if present. Otherwise tries to collect the closest vein.
     /// </summary>
-    private void Update()
+    /* private void Update()
     {
         if (state != null && !state.isRunning) return;
 
@@ -89,8 +89,8 @@ public class InteractionController : MonoBehaviour
                     RefreshInteractionTarget();
                 }
             }
-        }
-    }
+        } 
+    } */
 
     /// <summary>
     ///  Registers the vein as in range and, if it is closer than the current target, makes it the closest vein.
@@ -135,7 +135,7 @@ public class InteractionController : MonoBehaviour
     {
         if (nexus == null || state == null) return;
         nexusInRange = nexus;
-        if (state.coalInDepot > 0) SetInteractionVisible(true);
+        //if (state.coalInDepot > 0) //SetInteractionVisible(true);
     }
 
     /// <summary>
@@ -185,7 +185,7 @@ public class InteractionController : MonoBehaviour
     /// </summary>
     /// <param name="vein">Vein to collect</param>
     /// <returns>True is collection was a success, otherwise false.</returns>
-    private bool TryCollect(CoalVein vein)
+    public bool TryCollect(CoalVein vein)
     {
         if (vein == null) return false;
 
@@ -223,9 +223,9 @@ public class InteractionController : MonoBehaviour
     /// </summary>
     /// <param name="nexus">Nexus to deposit</param>
     /// <returns>False if the deposit is empty; otherwise true</returns>
-    private bool TryDeposit(Nexus nexus)
+    public bool TryDeposit()
     {
-        if (nexus == null) return false;
+        if (nexusInRange == null) return false;
 
         if (state.coalInDepot <= 0)
         {

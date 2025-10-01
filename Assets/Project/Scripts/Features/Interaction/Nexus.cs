@@ -16,7 +16,10 @@ public class Nexus : MonoBehaviour
 
         var interaction = other.GetComponentInChildren<InteractionController>();
         if (interaction != null)
-            interaction.NotifyNexusEntered(this);
+        {
+            interaction.NotifyNexusEntered(this); interaction.TryDeposit();
+        } 
+            
     }
 
     /// <summary>
@@ -24,12 +27,12 @@ public class Nexus : MonoBehaviour
     /// If the collider belongs to a player, forwards an exit notification to its controller.
     /// </summary>
     /// <param name="other">Data from the collider that exited the trigger</param>
-    private void OnTriggerExit(Collider other)
+/*     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
 
         var interaction = other.GetComponentInChildren<InteractionController>();
         if (interaction != null)
             interaction.NotifyNexusExited(this);
-    }
+    } */
 }
