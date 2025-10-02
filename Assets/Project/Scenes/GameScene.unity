@@ -3188,8 +3188,6 @@ MonoBehaviour:
   cameraController: {fileID: 5655709463645206157}
   audioManager: {fileID: 160698026}
   leaderboardManager: {fileID: 1543092289}
-  escapeKey: 27
-  hornKey: 104
   playerSpawn: {fileID: 998631725}
   cameraRespawnTransform: {fileID: 2022099918}
   state:
@@ -18578,7 +18576,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1599310809
 RectTransform:
   m_ObjectHideFlags: 0
