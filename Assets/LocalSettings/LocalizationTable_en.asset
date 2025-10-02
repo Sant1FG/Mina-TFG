@@ -51,7 +51,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 23038390607872
-    m_Localized: 'Press [Respawn] if you get stuck. Brake holding [Pedal]'
+    m_Localized: 'Use [Respawn] if stuck. Brake holding [Pedal]'
     m_Metadata:
       m_Items: []
   - m_Id: 23405568368640
@@ -167,7 +167,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3204644915814400
-    m_Localized: A Mina
+    m_Localized: A Mina Pocket
     m_Metadata:
       m_Items: []
   references:
