@@ -167,12 +167,19 @@ public class ExcavatorController : MonoBehaviour
             brakeTorque = coastBrakeTorque;
         }
 
-        if (speedKPH >= maxSpeedKPH)
+        float maxReverseSpeedKPH = 30f;
+        if (moveDir < 0f && speedKPH >= maxReverseSpeedKPH)
         {
             torque = 0f;
             brakeTorque = Mathf.Max(brakeTorque, limiterCoastBrake);
         }
 
+        if (moveDir > 0f && speedKPH >= maxSpeedKPH)
+        {
+            torque = 0f;
+            brakeTorque = Mathf.Max(brakeTorque, limiterCoastBrake);
+        }
+        
         colliders.FLWheel.motorTorque = torque;
         colliders.FRWheel.motorTorque = torque;
         colliders.RLWheel.motorTorque = torque;
