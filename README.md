@@ -2,13 +2,13 @@
 
 Videojuego educativo 3D desarrollado en Unity para el centro de interpretación "A Mina", en colaboración con la asociación HUME.
 
-## 📖 Descripción
+##  Descripción
 
 En colaboración con el Centro de Interpretación "A Mina", este Trabajo de Fin de Grado propone la creación de un software educativo relacionado con la historia de la explotación minera de As Pontes. La solución propuesta es un pequeño videojuego arcade en 3D, pensado para grupos en edad escolar. En él, el jugador controla una excavadora que debe recoger vetas de carbón repartidas por el escenario y depositarlas en una recreación simbólica de la central térmica. Todo ello bajo la presión de una cuenta atrás y la presencia de obstáculos generados dinámicamente que dificultarán las tareas de recolección. El juego incluye sistemas de interacción, físicas, HUD y lógica de puntuación, bajo una arquitectura modular basada en componentes.
 
 Disponible en dos versiones: escritorio (PC) y móvil (Android), compartiendo la misma base de código. La versión móvil adapta las mecánicas de recolección y la interfaz para pantallas táctiles.
 
-## 📸 Vista previa
+##  Vista previa
 
 Pantalla de Inicio PC<br>
 <img width="567" height="320" alt="image" src="https://github.com/user-attachments/assets/3ee2c972-e80d-4ae6-926e-18cbe6567169" /> <br>
@@ -22,20 +22,20 @@ Pantalla de Inicio versión móvil<br>
 Gameplay móvil<br>
 <img width="2048" height="921" alt="image" src="https://github.com/user-attachments/assets/f3907909-660c-4994-87d6-5e226c9f7a85" />  <br>
 
-## 🛠️ Tecnologías
+##  Tecnologías
 
 - **Motor:** Unity
 - **Lenguaje:** C#
 - **Plataformas:** PC · Android
 
-## ✨ Características
+##  Características
 
 - Mecánicas de interacción y recolección de objetos
 - Sistema de físicas de conducción y registro de puntuaciones
 - HUD adaptado a cada plataforma
 - Arquitectura modular basada en componentes
 
-## 📌 Instalación
+##  Instalación
 
 **Versión PC**
 1. Accede a la release de PC en el apartado releases de GitHub
